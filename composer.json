@@ -7,7 +7,7 @@
         "firebase/php-jwt": "dev-master",
         "php": ">=7.0"
     },
-    "license": "GNU",
+    "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Robin De Schepper",
