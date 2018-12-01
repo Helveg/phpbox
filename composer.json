@@ -1,0 +1,23 @@
+{
+    "name": "robindeschepper/phpbox",
+    "description": "A PHP Box package.",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3@dev",
+        "firebase/php-jwt": "dev-master",
+        "php": ">=7.0"
+    },
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Robin De Schepper",
+            "email": "robin.deschepper93@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "PhpBox": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
