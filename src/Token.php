@@ -21,13 +21,16 @@ class Token {
     }
   }
 
-  public function __toString() {
-    if($this->expireDateTime > new \DateTime()) {
-      $expireStr = " (expires at ".$this->expireDateTime->format("d/m/Y H:i:s").")";
-    } else {
-      $expireStr = " (expired)";
+  public static function isValid($token) {
+    if($token == NULL) {
+      return false;
+    } elseif($token instanceof Token) {
+      return $token->expireDateTime > (new \DateTime())->modify('+5 seconds');
     }
-    return "Token [{$this->token}]$expireStr";
+  }
+
+  public function __toString() {
+    return (string)$this->token;
   }
 }
 

@@ -3,8 +3,8 @@
     "description": "A PHP Box package.",
     "type": "library",
     "require": {
-        "guzzlehttp/guzzle": "^6.3@dev",
-        "firebase/php-jwt": "dev-master",
+        "guzzlehttp/guzzle": "^6.3.3",
+        "firebase/php-jwt": "5.0.0",
         "php": ">=7.0"
     },
     "license": "GPL-3.0-only",
