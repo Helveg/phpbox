@@ -15,9 +15,9 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "PhpBox": "src/"
+        "psr-4": {
+            "PhpBox\\": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
