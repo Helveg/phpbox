@@ -2,10 +2,10 @@
 
 namespace PhpBox;
 use PhpBox\Config\Config;
-use PhpBox\Items\{Folder};
+use PhpBox\Items\{Item, Folder};
 
 class Box {
-  private $baseUrl = "https://api.box.com/2.0/";
+  const baseUrl = "https://api.box.com/2.0/";
   private $AccessToken;
   private $config;
 
@@ -37,6 +37,29 @@ class Box {
     return false;
   }
 
+  public function requestExchangeToken($scopes = ["base_preview", "item_download"], $folder = NULL, $token = NULL) {
+    if($token == NULL) {
+      $token = $this->getValidAccessToken();
+    }
+    $client = new \GuzzleHttp\Client();
+    $params = [
+      'subject_token' => (string)$token,
+      'subject_token_type' => 'urn:ietf:params:oauth:token-type:access_token',
+      'grant_type' => 'urn:ietf:params:oauth:grant-type:token-exchange',
+      'scope' => implode(" ", $scopes)
+    ];
+    if ($folder != NULL) {
+      if ($folder instanceof Item && $folder->isFolder()) {
+        $folder = (string)($folder->getId());
+      }
+      $params['resource'] = Folder::endpointUrl.$folder;
+    }
+    $response = $client->request('POST', $this->config->getAuthenticationUrl(), [
+      'form_params' => $params
+    ]);
+    return new Token($response->getBody()->getContents());
+  }
+
   public function getAccessToken() {
     return $this->AccessToken;
   }
@@ -55,7 +78,7 @@ class Box {
     if(!empty($fields)) {
       $query['fields'] = implode(",", $fields);
     }
-    $response = $client->request('GET', $this->baseUrl."folders/$id", [
+    $response = $client->request('GET', self::baseUrl."folders/$id", [
       'headers' => $headers,
       'query' => $query
     ]);

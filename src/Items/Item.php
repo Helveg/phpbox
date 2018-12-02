@@ -13,6 +13,14 @@ class Item implements ItemInterface {
     $this->id = $data->id;
   }
 
+  public function getId() {
+    return $this->id;
+  }
+
+  public function getType() {
+    return $this->type;
+  }
+
   public function isFolder() {
     return $this->type == 'folder';
   }

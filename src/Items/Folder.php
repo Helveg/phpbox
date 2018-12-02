@@ -1,9 +1,11 @@
 <?php
 
 namespace PhpBox\Items;
+use PhpBox\Box;
 
 class Folder extends Item {
   protected $contains = [];
+  const endpointUrl = Box::baseUrl.'folders/';
 
   public function __construct($data) {
     parent::__construct($data);
