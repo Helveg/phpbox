@@ -20,6 +20,13 @@ class Folder extends Item {
     return $this->contains;
   }
 
+  public function getItemByName($name) {
+    foreach ($this->contains as $item)
+      if($item->getName() == $name)
+        return $item;
+    return false;
+  }
+
   public function getFiles() {
     return array_filter($this->contains, function($x) {return $x->isFile();});
   }
