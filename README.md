@@ -1,2 +1,29 @@
 # phpbox
 Implementation of several aspects of the Box v2.0 API
+
+## Installation
+Install via `composer require robindeschepper/phpbox`.
+
+## Getting Started
+
+Currently it only connects via a Box [JWT](https://developer.box.com/docs/construct-jwt-claim-manually) JSON config file. Accessing your box app is done like this:
+```php
+require_once("vendor/autoload.php");
+use PhpBox\Box;
+use PhpBox\Config\JsonConfig;
+
+$config = new JsonConfig("path/to/box_config.json");
+$box = new Box($config);
+```
+
+## Functionality
+
+Currently I have only implemented `requestFolder` to retrieve a Folder object. Multiple of these calls can be used to explore the Box tree.
+
+```php
+$root = $box->requestFolder(); // Get root folder
+// This subfolders and files are received in the item_collection of the first root folder:
+$myPictures = $root->getItemByName("Pictures"); 
+// To explicitly fetch the content of a subfolder another request is required
+$myPictures = $box->requestFolder($myPictures);
+```
