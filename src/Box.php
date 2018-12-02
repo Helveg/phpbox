@@ -57,7 +57,7 @@ class Box {
     $response = $client->request('POST', $this->config->getAuthenticationUrl(), [
       'form_params' => $params
     ]);
-    return new Token($response->getBody()->getContents());
+    return new Token(json_decode($response->getBody()->getContents()));
   }
 
   public function getAccessToken() {
