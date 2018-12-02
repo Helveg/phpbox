@@ -2,7 +2,7 @@
 
 namespace PhpBox;
 use PhpBox\Config\Config;
-use PhpBox\Items\{Item, Folder};
+use PhpBox\Objects\{Item, Folder};
 
 class Box {
   const baseUrl = "https://api.box.com/2.0/";
@@ -12,7 +12,7 @@ class Box {
   public function __construct(Config $config, $token = "") {
     $this->config = $config;
     if($token != "") {
-      $this->AccessToken = new Token($token);
+      $this->AccessToken = new Token($this, $token);
     } else {
       $this->requestAccessToken();
     }
@@ -32,7 +32,7 @@ class Box {
     ]);
     if($this->handleResponse($response)) {
       $data = $response->getBody()->getContents();
-      $this->AccessToken = new Token(json_decode($data));
+      $this->AccessToken = new Token($this, json_decode($data));
     }
     return false;
   }
@@ -57,7 +57,7 @@ class Box {
     $response = $client->request('POST', $this->config->getAuthenticationUrl(), [
       'form_params' => $params
     ]);
-    return new Token(json_decode($response->getBody()->getContents()));
+    return new Token($this, json_decode($response->getBody()->getContents()));
   }
 
   public function getAccessToken() {
@@ -84,7 +84,7 @@ class Box {
       'query' => $query
     ]);
     if($this->handleResponse($response)){
-      return new Folder(json_decode($response->getBody()->getContents()));
+      return new Folder($this, json_decode($response->getBody()->getContents()));
     }
     return false;
   }

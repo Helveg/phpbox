@@ -1,17 +1,16 @@
 <?php
 
-namespace PhpBox\Items;
+namespace PhpBox\Objects;
 use PhpBox\Box;
 
 class Folder extends Item {
   protected $contains = [];
   const endpointUrl = Box::baseUrl.'folders/';
 
-  public function __construct($data) {
-    parent::__construct($data);
+  public function parseResponse(\stdClass $data) {
     if(isset($data->item_collection)) {
       foreach ($data->item_collection->entries as $key => $value) {
-        $this->contains[] = new Item($value);
+        $this->contains[] = Object::differentiate($this->box, $value);
       }
     }
   }

@@ -3,22 +3,28 @@
 namespace PhpBox;
 
 class Token {
+  protected $box;
   protected $token;
   protected $expireDateTime;
   protected $type;
 
-  public function __construct($token) {
-    if($token instanceof \stdClass) {
-      $this->token = $token->access_token;
-      $this->expireDateTime = (new \DateTime())->add(new \DateInterval("PT{$token->expires_in}S"));
-      $this->type = $token->token_type;
-    } elseif(is_string($token)) { // Assume token is valid?
+  public function __construct(Box $box, $token) {
+    $this->box = $box;
+    if($token instanceof \stdClass) { // We've received this token as parsed json data.
+      $this->parseResponse($token);
+    } elseif(is_string($token)) { // We received a token string.
       $this->token = $token;
       $this->type = 'bearer';
-      $this->expireDateTime = (new \DateTime())->add(new \DateInterval("PT5M"));
+      $this->expireDateTime = (new \DateTime())->add(new \DateInterval("PT5M")); // Assume it is still valid for 5 minutes
     } else {
       throw new \Exception("Invalid token data.");
     }
+  }
+
+  protected function parseResponse(\stdClass $data) {
+    $this->token = $data->access_token;
+    $this->expireDateTime = (new \DateTime())->add(new \DateInterval("PT{$data->expires_in}S"));
+    $this->type = $data->token_type;
   }
 
   public static function isValid($token) {
