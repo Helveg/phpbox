@@ -72,6 +72,7 @@ class Box {
   }
 
   public function requestFolder($id = "0", $fields = []) {
+    if($id instanceof Item && $id->isFolder()) $id = $id->getId();
     $client = new \GuzzleHttp\Client();
     $headers = $this->getDefaultHeaders();
     $query = [];

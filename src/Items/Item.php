@@ -9,8 +9,9 @@ class Item implements ItemInterface {
 
   public function __construct($data) {
     $this->data = $data;
-    $this->type = $data->type;
     $this->id = $data->id;
+    $this->type = $data->type;
+    $this->name = $data->name;
   }
 
   public function getId() {
@@ -19,6 +20,10 @@ class Item implements ItemInterface {
 
   public function getType() {
     return $this->type;
+  }
+
+  public function getName() {
+    return $this->name;
   }
 
   public function isFolder() {
