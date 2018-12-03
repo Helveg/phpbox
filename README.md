@@ -20,7 +20,7 @@ This will use your json config file to request an access token via JWT. The toke
 
 ## Filesystem
 
-Currently I have only implemented `requestFolder` to retrieve a Folder object. Multiple of these calls can be used to explore the Box tree.
+Currently I have only implemented `requestFolder` to retrieve a [Folder](https://developer.box.com/v2.0/reference#folder-object) object. Multiple of these calls can be used to explore the Box tree.
 
 ```php
 $root = $box->requestFolder(); // Get root folder
