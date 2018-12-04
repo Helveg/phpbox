@@ -14,10 +14,16 @@ class Box {
 
   public function __construct(Config $config, $token = "") {
     $this->config = $config;
+    // Request access token
     if($token != "") {
       $this->AccessToken = new Token($this, $token);
     } else {
       $this->requestAccessToken();
+    }
+    // Initialize managers
+    foreach (["Collaboration", "File", "Folder", "Group", "GroupMembership", "User"] as $manager) {
+      $className = "\\PhpBox\\Managers\\{$manager}Manager";
+      $this->$manager = new $className($this);
     }
   }
 
@@ -70,10 +76,14 @@ class Box {
     return $this->AccessToken;
   }
 
-  private function guzzle($method, $endpoint, $params, $responseHandler = NULL) {
+  public function guzzle($method, $endpoint, $params, $responseHandler = NULL) {
+    // Default headers
+    if(!isset($params['headers'])) $params['headers'] = $this->getDefaultHeaders();
+    else $params['headers'] = array_merge($this->getDefaultHeaders(), $params['headers']);
+    // Connect
     $client = new \GuzzleHttp\Client(["base_uri" => self::baseUrl, "http_errors" => false]);
     try {
-      $response = $client->request($method, $endpoint, $params);
+      $response = $client->request($method, $endpoint."?name=RRR", $params);
     }
     finally {
       $this->lastResponse = $response;
@@ -96,6 +106,19 @@ class Box {
     }
   }
 
+  private function guzzleCreate($object, $params, $fields) {
+    $endpoint = \PhpBox\Objects\Object::toBoxObjectString(basename($object))."s/";
+    $classname = "\\PhpBox\\Objects\\$object";
+    $response = $this->guzzle('POST', $endpoint, [
+      'query' => self::fieldsQuery($fields),
+      'json' => $params
+    ]);
+    if($response) {
+      return new $classname($this, $response);
+    }
+    return false;
+  }
+
   public function getResponseCode() {
     return $this->lastResponseCode;
   }
@@ -104,15 +127,7 @@ class Box {
     return $this->lastResponse;
   }
 
-  public function guzzleObject($url, $fields = [], $headers = []) {
-    $headers = array_merge($this->getDefaultHeaders(), $headers);
-    return $this->guzzle('GET', $url, [
-      'headers' => $headers,
-      'query' => self::fieldsQuery($fields)
-    ]);
-  }
-
-  private static function fieldsQuery($fields, $query = []) {
+  public static function fieldsQuery($fields, $query = []) {
     if(!empty($fields)) {
       $query['fields'] = implode(',', $fields);
     }
@@ -143,24 +158,25 @@ class Box {
     return $ret;
   }
 
+  public function requestGroupsByName(string $name, $query = [], $fields = []) {
+    $query['name'] = $name;
+    $response = $this->guzzle("GET", "groups/", [
+      "query" => self::fieldsQuery($fields, $query)
+    ]);
+    if($response) {
+      $ret = [];
+      foreach($response->entries as $groupdata) {
+        $ret[] = new Group($groupdata);
+      }
+      return $ret;
+    }
+    return false;
+  }
+
   public function requestGroupMembership($id, $fields = []) {
     if($id instanceof Object && $id->isGroupMembership()) $id = $id->getId();
     if($ret = $this->guzzleObject("group_memberships/$id", $fields)) $ret = new GroupMembership($this, $ret);
     return $ret;
-  }
-
-  private function guzzleCreate($object, $params, $fields) {
-    $endpoint = \PhpBox\Objects\Object::toBoxObjectString(basename($object))."s/";
-    $classname = "\\PhpBox\\Objects\\$object";
-    $response = $this->guzzle('POST', $endpoint, [
-      'headers' => $this->getDefaultHeaders(),
-      'query' => self::fieldsQuery($fields),
-      'json' => $params
-    ]);
-    if($response) {
-      return new $classname($this, $response);
-    }
-    return false;
   }
 
   public function createAppUser(string $name, $params = [], $fields = []) {
@@ -178,6 +194,12 @@ class Box {
       }
     }
     return $ret;
+  }
+
+  public function createGroupMembership(User $user, Group $group, $params = [], $fields = []) {
+    $params["user"] = ["id" => $user->getId()];
+    $params["group"] = ["id" => $group->getId()];
+    $this->guzzleCreate("GroupMembership", $params, $fields);
   }
 
   public function getDefaultHeaders() {

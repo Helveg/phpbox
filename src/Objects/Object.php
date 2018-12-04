@@ -20,14 +20,29 @@ abstract class Object implements ObjectInterface {
     $this->parseResponse($data);
   }
 
-  protected function tryFromData(\stdClass $data, $extract) {
+  protected function tryFromData(\stdClass $data, $extract, $map = NULL) {
     if(!is_array($extract)) $extract = [$extract];
     foreach ($extract as $key) {
       if(property_exists($this, $key)) {
-        if(isset($data->$key)) $this->$key = $data->$key;
+        if(isset($data->$key)) {
+          $cell = $data->$key;
+          if($map !== NULL) $cell = $map($cell);
+          $this->$key = $cell;
+        }
       } else {
         throw new \Exception("Key '$key' does not exist in class ".get_class($this));
       }
+    }
+  }
+
+  protected function tryObjectFromData(\stdClass $data, $objectName, $prop, $key) {
+    if(property_exists($this, $key)) {
+      if(isset($data->$key)) {
+        $sub_data = $data->$key;
+        $this->$prop = new $objectName($this->box, $sub_data);
+      }
+    } else {
+      throw new \Exception("Object '$key' does not exist in class ".get_class($this));
     }
   }
 
@@ -93,7 +108,7 @@ abstract class Object implements ObjectInterface {
   }
 
   public static function toPhpBoxObjectString($phpboxobject) {
-    return str_replace("_", "", ucwords($data->type, "_"));
+    return str_replace("_", "", ucwords($phpboxobject, "_"));
   }
 
   public static function toBoxObjectString($boxobject) {
