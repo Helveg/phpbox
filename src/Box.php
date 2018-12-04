@@ -3,6 +3,17 @@
 namespace PhpBox;
 use PhpBox\Config\Config;
 use PhpBox\Objects\{Object, Item, Folder, File, User};
+use PhpBox\Exception\BoxException;
+
+// Thanks to cletus@StackOverflow https://stackoverflow.com/users/18393/cletus
+function from_camel_case($input) {
+  preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+  $ret = $matches[0];
+  foreach ($ret as &$match) {
+    $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+  }
+  return implode('_', $ret);
+}
 
 class Box {
   const baseUrl = "https://api.box.com/2.0/";
@@ -105,14 +116,17 @@ class Box {
 
   private function guzzleObject($url, $fields = [], $headers = []) {
     $headers = array_merge($this->getDefaultHeaders(), $headers);
-    $query = [];
-    if(!empty($fields)) {
-      $query['fields'] = implode(",", $fields);
-    }
     return $this->guzzle('GET', $url, [
       'headers' => $headers,
-      'query' => $query
+      'query' => self::fieldsQuery($fields)
     ]);
+  }
+
+  private static function fieldsQuery($fields, $query = []) {
+    if(!empty($fields)) {
+      $query['fields'] = implode(',', $fields);
+    }
+    return $query;
   }
 
   public function requestFolder($id = "0", $fields = []) {
@@ -133,22 +147,47 @@ class Box {
     return $ret;
   }
 
-  public function createAppUser(string $name, $params = [], $fields = []) {
-    $query = [];
-    if(!empty($fields)) {
-      $query['fields'] = implode(",", $fields);
-    }
-    $params['name'] = $name;
-    $params['is_platform_access_only'] = true;
-    $response = $this->guzzle('POST', "users/", [
+  public function requestGroup($id, $fields = []) {
+    if($id instanceof Object && $id->isGroup()) $id = $id->getId();
+    if($ret = $this->guzzleObject("groups/$id", $fields)) $ret = new Group($this, $ret);
+    return $ret;
+  }
+
+  public function requestGroupMembership($id, $fields = []) {
+    if($id instanceof Object && $id->isGroupMembership()) $id = $id->getId();
+    if($ret = $this->guzzleObject("group_memberships/$id", $fields)) $ret = new GroupMembership($this, $ret);
+    return $ret;
+  }
+
+  private function guzzleCreate($object, $params, $fields) {
+    $endpoint = from_camel_case(basename($object))."s/";
+    $classname = "\\PhpBox\\Objects\\$object";
+    $response = $this->guzzle('POST', $endpoint, [
       'headers' => $this->getDefaultHeaders(),
-      'query' => $query,
+      'query' => self::fieldsQuery($fields),
       'json' => $params
     ]);
     if($response) {
-      return new User($this, $response);
+      return new $classname($this, $response);
     }
     return false;
+  }
+
+  public function createAppUser(string $name, $params = [], $fields = []) {
+    $params['name'] = $name;
+    $params['is_platform_access_only'] = true;
+    return $this->guzzleCreate("User", $params, $fields);
+  }
+
+  public function createGroup(string $name, $params = [], $fields = []) {
+    $params['name'] = $name;
+    if(!($ret = $this->guzzleCreate("Group", $params, $fields))) {
+      $error = $this->getResponseCode();
+      if($error == 409) {
+        throw new BoxException("A group with this name already exists", 409);
+      }
+    }
+    return $ret;
   }
 
   public function getDefaultHeaders() {

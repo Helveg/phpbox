@@ -13,6 +13,8 @@ abstract class Object implements ObjectInterface {
   public function __construct(Box $box, \stdClass $data) {
     $this->box = $box;
     $this->data = $data;
+    if(!isset($data->id)) throw new \Exception("All responses must contain an 'id' field.");
+    if(!isset($data->type)) throw new \Exception("All responses must contain a 'type' field.");
     $this->id = $data->id;
     $this->type = $data->type;
     $this->parseResponse($data);
