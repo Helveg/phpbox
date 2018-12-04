@@ -10,6 +10,15 @@ abstract class Object implements ObjectInterface {
   protected $id;
   protected $type;
 
+  const ALL_OBJECTS = [
+    "Collaboration",
+    "File",
+    "Folder",
+    "Group",
+    "GroupMembership",
+    "User"
+  ];
+
   public function __construct(Box $box, \stdClass $data) {
     $this->box = $box;
     $this->data = $data;
@@ -36,6 +45,7 @@ abstract class Object implements ObjectInterface {
   }
 
   protected function tryObjectFromData(\stdClass $data, $objectName, $prop, $key) {
+    if(!in_array($objectName, self::ALL_OBJECTS)) throw new \Exception("$objectName is not a PhpBox\\Object type.");
     if(property_exists($this, $key)) {
       if(isset($data->$key)) {
         $sub_data = $data->$key;
@@ -44,6 +54,27 @@ abstract class Object implements ObjectInterface {
     } else {
       throw new \Exception("Object '$key' does not exist in class ".get_class($this));
     }
+  }
+
+  public function __call($name, $args) {
+    $objectName = substr($name, 2);
+    $isObject = "is$objectName";
+    if(substr($name, 0, 2) == "is" && in_array($objectName, self::ALL_OBJECTS)) {
+      // isObject()
+      return $this->type == self::toBoxObjectString(basename(static::class));
+    } elseif(substr($name, 0, 2) == "to" && in_array($objectName, self::ALL_OBJECTS)) {
+      // toObject()
+      if($this->$isObject()) return new $objectName($this->box, $this->data);
+      throw new Exception("This is not a $objectName.");
+    }
+    throw new \Exception("Attempt to call unknown method '$name' in '".static::class."'");
+  }
+
+  public function __get($name) {
+    // To allow readonly access to all the parseResponse fields. Maybe keep a list of all valid props through
+    // the tryFromData calls.
+    if(property_exists(static::class, $name)) return $this->$name;
+    throw new \Exception("Attempt to get unknown/inaccessible property '$name' in '".static::class."'");
   }
 
   public function request($fields = []) {
@@ -60,32 +91,6 @@ abstract class Object implements ObjectInterface {
     return $this->type;
   }
 
-  public function isFolder() {
-    return $this->type == 'folder';
-  }
-
-  public function isFile() {
-    return $this->type == 'file';
-  }
-
-  public function isUser() {
-    return $this->type == 'user';
-  }
-
-  public function toFolder() {
-    if($this->isFolder()) return new Folder($this->box, $this->data);
-    throw new Exception("This is not a folder.");
-  }
-
-  public function toFile() {
-    if($this->isFile()) return new File($this->box, $this->data);
-    throw new Exception("This is not a file.");
-  }
-
-  public function toUser() {
-    if($this->isUser()) return new User($this->box, $this->data);
-    throw new Exception("This is not a user.");
-  }
   /**
    * Differentiate generic response data into an Object type based on the `type`
    * field if such a class exists. If it doesn't a generic Object is returned.
@@ -99,12 +104,13 @@ abstract class Object implements ObjectInterface {
    */
   public static function differentiate(Box $box, \stdClass $data) {
     if(isset($data->type)) {
-      $className = "\PhpBox\Objects\\".self::toPhpBoxObjectString($data->type); // snake_case to CamelCase
-      if(class_exists($className)) {
+      $objectName = self::toPhpBoxObjectString($data->type);
+      $className = "\PhpBox\Objects\\$objectName"; // snake_case to CamelCase
+      if(in_array($objectName, self::ALL_OBJECTS)) {
         return new $className($box, $data);
       }
     }
-    return new Object($box, $data);
+    throw new \Exception("Unknown box object type received: '{$data->type}'");
   }
 
   public static function toPhpBoxObjectString($phpboxobject) {

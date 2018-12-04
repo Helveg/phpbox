@@ -106,19 +106,6 @@ class Box {
     }
   }
 
-  private function guzzleCreate($object, $params, $fields) {
-    $endpoint = \PhpBox\Objects\Object::toBoxObjectString(basename($object))."s/";
-    $classname = "\\PhpBox\\Objects\\$object";
-    $response = $this->guzzle('POST', $endpoint, [
-      'query' => self::fieldsQuery($fields),
-      'json' => $params
-    ]);
-    if($response) {
-      return new $classname($this, $response);
-    }
-    return false;
-  }
-
   public function getResponseCode() {
     return $this->lastResponseCode;
   }
@@ -132,45 +119,6 @@ class Box {
       $query['fields'] = implode(',', $fields);
     }
     return $query;
-  }
-
-  public function requestFolder($id = "0", $fields = []) {
-    if($id instanceof Object && $id->isFolder()) $id = $id->getId();
-    if($ret = $this->guzzleObject("folders/$id", $fields)) $ret = new Folder($this, $ret);
-    return $ret;
-  }
-
-  public function requestFile($id, $fields = []) {
-    if($id instanceof Object && $id->isFile()) $id = $id->getId();
-    if($ret = $this->guzzleObject("files/$id", $fields)) $ret = new File($this, $ret);
-    return $ret;
-  }
-
-  public function requestUser($id = "me", $fields = []) {
-    if($id instanceof Object && $id->isUser()) $id = $id->getId();
-    if($ret = $this->guzzleObject("users/$id", $fields)) $ret = new User($this, $ret);
-    return $ret;
-  }
-
-  public function requestGroup($id, $fields = []) {
-    if($id instanceof Object && $id->isGroup()) $id = $id->getId();
-    if($ret = $this->guzzleObject("groups/$id", $fields)) $ret = new Group($this, $ret);
-    return $ret;
-  }
-
-  public function requestGroupsByName(string $name, $query = [], $fields = []) {
-    $query['name'] = $name;
-    $response = $this->guzzle("GET", "groups/", [
-      "query" => self::fieldsQuery($fields, $query)
-    ]);
-    if($response) {
-      $ret = [];
-      foreach($response->entries as $groupdata) {
-        $ret[] = new Group($groupdata);
-      }
-      return $ret;
-    }
-    return false;
   }
 
   public function requestGroupMembership($id, $fields = []) {
