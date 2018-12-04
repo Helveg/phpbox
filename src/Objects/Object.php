@@ -31,6 +31,12 @@ abstract class Object implements ObjectInterface {
     }
   }
 
+  public function request($fields = []) {
+    if($ret = $this->box->guzzleObject(self::toBoxObjectString(static::class)."s/{$this->$id}", $fields))
+      $this->parseResponse($ret);
+    return $ret;
+  }
+
   public function getId() {
     return $this->id;
   }
@@ -78,11 +84,25 @@ abstract class Object implements ObjectInterface {
    */
   public static function differentiate(Box $box, \stdClass $data) {
     if(isset($data->type)) {
-      $className = "\PhpBox\Objects\\".str_replace("_", "", ucwords($data->type, "_")); // snake_case to CamelCase
+      $className = "\PhpBox\Objects\\".self::toPhpBoxObjectString($data->type); // snake_case to CamelCase
       if(class_exists($className)) {
         return new $className($box, $data);
       }
     }
     return new Object($box, $data);
+  }
+
+  public static function toPhpBoxObjectString($phpboxobject) {
+    return str_replace("_", "", ucwords($data->type, "_"));
+  }
+
+  public static function toBoxObjectString($boxobject) {
+    // Thanks to cletus@StackOverflow https://stackoverflow.com/users/18393/cletus
+    preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+    $ret = $matches[0];
+    foreach ($ret as &$match) {
+      $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+    }
+    return implode('_', $ret);
   }
 }

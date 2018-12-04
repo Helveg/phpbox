@@ -5,16 +5,6 @@ use PhpBox\Config\Config;
 use PhpBox\Objects\{Object, Item, Folder, File, User};
 use PhpBox\Exception\BoxException;
 
-// Thanks to cletus@StackOverflow https://stackoverflow.com/users/18393/cletus
-function from_camel_case($input) {
-  preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-  $ret = $matches[0];
-  foreach ($ret as &$match) {
-    $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
-  }
-  return implode('_', $ret);
-}
-
 class Box {
   const baseUrl = "https://api.box.com/2.0/";
   private $AccessToken;
@@ -114,7 +104,7 @@ class Box {
     return $this->lastResponse;
   }
 
-  private function guzzleObject($url, $fields = [], $headers = []) {
+  public function guzzleObject($url, $fields = [], $headers = []) {
     $headers = array_merge($this->getDefaultHeaders(), $headers);
     return $this->guzzle('GET', $url, [
       'headers' => $headers,
@@ -160,7 +150,7 @@ class Box {
   }
 
   private function guzzleCreate($object, $params, $fields) {
-    $endpoint = from_camel_case(basename($object))."s/";
+    $endpoint = \PhpBox\Objects\Object::toBoxObjectString(basename($object))."s/";
     $classname = "\\PhpBox\\Objects\\$object";
     $response = $this->guzzle('POST', $endpoint, [
       'headers' => $this->getDefaultHeaders(),
