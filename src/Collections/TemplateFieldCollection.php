@@ -2,7 +2,7 @@
 
 namespace PhpBox\Collections;
 use \PhpBox\Box;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\TemplateField;
 
 class TemplateFieldCollection extends Collection {
 
@@ -13,7 +13,7 @@ class TemplateFieldCollection extends Collection {
         $arr[] = new TemplateField($box, $entry);
       }
     } else {
-      throw new Exception("Invalid data passed to TemplateFieldCollection constructor: must be either array of stdClasses");
+      throw new \Exception("Invalid data passed to TemplateFieldCollection constructor: must be either array of stdClasses");
     }
     parent::__construct($box, $arr);
   }

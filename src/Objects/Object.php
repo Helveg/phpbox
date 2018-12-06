@@ -14,15 +14,25 @@ abstract class Object{
   const ALL_OBJECTS = [
     "Collection",
     "Collaboration",
+    "Comment",
+    "Event",
+    "EventCollection",
     "File",
     "Folder",
     "Group",
     "GroupMembership",
+    "Item",
     "ItemCollection",
     "Metadata",
+    "MetadataCascadePolicy",
     "MetadataTemplate",
     "SharedLink",
-    "User"
+    "Task",
+    "TemplateField",
+    "TemplateFieldCollection",
+    "User",
+    "Webhook",
+    "WebLink"
   ];
 
   public function __construct(Box $box, \stdClass $data) {
@@ -118,13 +128,13 @@ abstract class Object{
     throw new \Exception("Unknown box object type received: '{$data->type}'");
   }
 
-  public static function toPhpBoxObjectString($phpboxobject) {
-    return str_replace("_", "", ucwords($phpboxobject, "_"));
+  public static function toPhpBoxObjectString($boxobject) {
+    return str_replace("_", "", ucwords($boxobject, "_"));
   }
 
-  public static function toBoxObjectString($boxobject) {
+  public static function toBoxObjectString($phpboxobject) {
     // Thanks to cletus@StackOverflow https://stackoverflow.com/users/18393/cletus
-    preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $boxobject, $matches);
+    preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $phpboxobject, $matches);
     $ret = $matches[0];
     foreach ($ret as &$match) {
       $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
