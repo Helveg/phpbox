@@ -2,32 +2,31 @@
 
 namespace PhpBox\Objects;
 use PhpBox\Box;
+use PhpBox\Collections\ItemCollection;
 
 class Folder extends Item {
-  protected $contains = [];
+  protected $item_collection;
+  protected $folder_upload_email, $sync_state, $can_non_owners_invite;
+  protected $is_collaboration_restricted_to_enterprise, $allowed_shared_link_access_levels;
   const endpointUrl = Box::baseUrl.'folders/';
 
   public function parseResponse(\stdClass $data) {
-    if(isset($data->item_collection)) {
-      foreach ($data->item_collection->entries as $key => $value) {
-        $this->contains[] = Object::differentiate($this->box, $value);
-      }
-    }
-  }
-
-  public function getItems() {
-    return $this->contains;
-  }
-
-  public function getItemByName($name) {
-    foreach ($this->contains as $item)
-      if($item->getName() == $name)
-        return $item;
-    return false;
+    parent::parseResponse($data);
+    $this->tryFromData($data, ["folder_upload_email", "sync_state", "can_non_owners_invite",
+    "is_collaboration_restricted_to_enterprise", "allowed_shared_link_access_levels"]);
+    $this->tryObjectFromData($data, ItemCollection::class, "item_collection", "item_collection");
   }
 
   public function getFiles() {
-    return array_filter($this->contains, function($x) {return $x->isFile();});
+    return new ItemCollection($this->box, array_filter($this->item_collection->getArrayCopy(), function($x) {return $x->isFile();}));
+  }
+
+  public function getFolders() {
+    return new ItemCollection($this->box, array_filter($this->item_collection->getArrayCopy(), function($x) {return $x->isFolder();}));
+  }
+
+  public function getItems() {
+    return $this->item_collection->getArrayCopy();
   }
 
 }

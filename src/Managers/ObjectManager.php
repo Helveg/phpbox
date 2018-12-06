@@ -20,7 +20,6 @@ class ObjectManager implements ObjectManagerInterface {
       $id = $id->getId();
     }
     $query = Box::fieldsQuery($fields);
-    echo "{$boxObjectName}s/$id";
     if($ret = $this->box->guzzle("GET", "{$boxObjectName}s/$id", ["query" => $query]))
       $ret = new $objectClassName($this->box, $ret);
     return $ret;

@@ -9,17 +9,24 @@ abstract class Object implements ObjectInterface {
   protected $data;
   protected $id;
   protected $type;
+  protected $responseFields;
 
   const ALL_OBJECTS = [
+    "Collection",
     "Collaboration",
     "File",
     "Folder",
     "Group",
     "GroupMembership",
+    "ItemCollection",
+    "SharedLink",
     "User"
   ];
 
   public function __construct(Box $box, \stdClass $data) {
+    // Array to store fields with magical readonly access
+    // because they are loaded from the guzzle response and are part of the box object
+    $this->responseFields = ["id","type"];
     $this->box = $box;
     $this->data = $data;
     if(!isset($data->id)) throw new \Exception("All responses must contain an 'id' field.");
@@ -33,6 +40,7 @@ abstract class Object implements ObjectInterface {
     if(!is_array($extract)) $extract = [$extract];
     foreach ($extract as $key) {
       if(property_exists($this, $key)) {
+        $this->responseFields[] = $key;
         if(isset($data->$key)) {
           $cell = $data->$key;
           if($map !== NULL) $cell = $map($cell);
@@ -44,12 +52,12 @@ abstract class Object implements ObjectInterface {
     }
   }
 
-  protected function tryObjectFromData(\stdClass $data, $objectName, $prop, $key) {
-    if(!in_array($objectName, self::ALL_OBJECTS)) throw new \Exception("$objectName is not a PhpBox\\Object type.");
+  protected function tryObjectFromData(\stdClass $data, $objectName, $key) {
+    if(!in_array(basename($objectName), self::ALL_OBJECTS)) throw new \Exception("'$objectName' is not a PhpBox\\Object or Collection type.");
+    $this->responseFields[] = $key;
     if(property_exists($this, $key)) {
       if(isset($data->$key)) {
-        $sub_data = $data->$key;
-        $this->$prop = new $objectName($this->box, $sub_data);
+        $this->$key = new $objectName($this->box, $data->$key);
       }
     } else {
       throw new \Exception("Object '$key' does not exist in class ".get_class($this));
@@ -71,16 +79,16 @@ abstract class Object implements ObjectInterface {
   }
 
   public function __get($name) {
-    // To allow readonly access to all the parseResponse fields. Maybe keep a list of all valid props through
-    // the tryFromData calls.
-    if(property_exists(static::class, $name)) return $this->$name;
+    // To allow readonly access to all the Box response data fields.
+    if(property_exists(static::class, $name) && in_array($name, $this->responseFields)) return $this->$name;
     throw new \Exception("Attempt to get unknown/inaccessible property '$name' in '".static::class."'");
   }
 
   public function request($fields = []) {
-    if($ret = $this->box->guzzleObject(self::toBoxObjectString(static::class)."s/{$this->$id}", $fields))
-      $this->parseResponse($ret);
-    return $ret;
+    $managerName = basename(static::class);
+    if($this->box->$managerName->request($this->id, $fields))
+      $this->parseResponse($this->box->getResponse());
+    return $this;
   }
 
   public function getId() {
