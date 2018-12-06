@@ -4,7 +4,7 @@ namespace PhpBox\Objects;
 use PhpBox\Box;
 use PhpBox\Collections\ItemCollection;
 
-abstract class Item extends Object implements ObjectInterface {
+abstract class Item extends Object {
   protected $name, $item_status;
   protected $size, $description, $sequence_id, $etag, $created_at;
   protected $modified_at, $trashed_at, $purged_at, $content_created_at;

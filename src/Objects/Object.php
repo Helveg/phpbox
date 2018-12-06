@@ -3,7 +3,7 @@
 namespace PhpBox\Objects;
 use PhpBox\Box;
 
-abstract class Object implements ObjectInterface {
+abstract class Object{
   abstract protected function parseResponse(\stdClass $data);
   protected $box;
   protected $data;
@@ -19,6 +19,8 @@ abstract class Object implements ObjectInterface {
     "Group",
     "GroupMembership",
     "ItemCollection",
+    "Metadata",
+    "MetadataTemplate",
     "SharedLink",
     "User"
   ];
@@ -29,22 +31,21 @@ abstract class Object implements ObjectInterface {
     $this->responseFields = ["id","type"];
     $this->box = $box;
     $this->data = $data;
-    if(!isset($data->id)) throw new \Exception("All responses must contain an 'id' field.");
-    if(!isset($data->type)) throw new \Exception("All responses must contain a 'type' field.");
-    $this->id = $data->id;
-    $this->type = $data->type;
+    if(isset($data->id)) $this->id = $data->id;
+    if(isset($data->type)) $this->type = $data->type;
     $this->parseResponse($data);
   }
 
   protected function tryFromData(\stdClass $data, $extract, $map = NULL) {
     if(!is_array($extract)) $extract = [$extract];
     foreach ($extract as $key) {
-      if(property_exists($this, $key)) {
-        $this->responseFields[] = $key;
+      $prop_key = (substr($key, 0, 1) === "\$" ? "meta_" : substr($key, 0, 1)).substr($key, 1); // Replace the $keys by meta_keys for Box metadata.
+      if(property_exists($this, $prop_key)) {
+        $this->responseFields[] = $prop_key;
         if(isset($data->$key)) {
           $cell = $data->$key;
           if($map !== NULL) $cell = $map($cell);
-          $this->$key = $cell;
+          $this->$prop_key = $cell;
         }
       } else {
         throw new \Exception("Key '$key' does not exist in class ".get_class($this));
@@ -78,6 +79,10 @@ abstract class Object implements ObjectInterface {
     throw new \Exception("Attempt to call unknown method '$name' in '".static::class."'");
   }
 
+  public function isItem() {
+    return $this->isFolder() || $this->isFile();
+  }
+
   public function __get($name) {
     // To allow readonly access to all the Box response data fields.
     if(property_exists(static::class, $name) && in_array($name, $this->responseFields)) return $this->$name;
@@ -89,14 +94,6 @@ abstract class Object implements ObjectInterface {
     if($this->box->$managerName->request($this->id, $fields))
       $this->parseResponse($this->box->getResponse());
     return $this;
-  }
-
-  public function getId() {
-    return $this->id;
-  }
-
-  public function getType() {
-    return $this->type;
   }
 
   /**

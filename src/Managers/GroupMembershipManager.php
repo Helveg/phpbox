@@ -14,7 +14,7 @@ class GroupMembershipManager extends ObjectManager {
     $params['name'] = $name;
     $params['group'] = ["id"=>$group];
     $params['user'] = ["id"=>$user];
-    parent::base_create($params, $fields);
+    return $this->base_create($params, $fields);
   }
 }
 
