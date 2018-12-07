@@ -10,7 +10,6 @@ class LegalHold extends Object {
       function($x){return new \DateTime($x);});
     $this->tryObjectFromData($data, FileVersion::class, "file_version");
     $this->tryObjectFromData($data, File::class, "file");
-    if(isset($data->legal_hold_policy_assignments))
-      $this->legal_hold_policy_assignments = new Collection($this->box, $data->legal_hold_policy_assignments);
+    $this->tryCollectionFromData($data, LegalHoldPolicyAssignmentCollection::class, "legal_hold_policy_assignments");
   }
 }

@@ -14,7 +14,7 @@ class Folder extends Item {
     parent::parseResponse($data);
     $this->tryFromData($data, ["folder_upload_email", "sync_state", "can_non_owners_invite",
     "is_collaboration_restricted_to_enterprise", "allowed_shared_link_access_levels"]);
-    $this->tryObjectFromData($data, ItemCollection::class, "item_collection", "item_collection");
+    $this->tryCollectionFromData($data, ItemCollection::class, "item_collection");
   }
 
   public function getFiles() {
@@ -26,7 +26,7 @@ class Folder extends Item {
   }
 
   public function getItems() {
-    return $this->item_collection->getArrayCopy();
+    return $this->item_collection;
   }
 
 }

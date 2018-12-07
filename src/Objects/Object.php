@@ -45,7 +45,7 @@ abstract class Object{
           $this->$prop_key = $cell;
         }
       } else {
-        throw new \Exception("Key '$key' does not exist in class ".get_class($this));
+        throw new \Exception("Key '$prop_key' does not exist in class ".get_class($this));
       }
     }
   }
@@ -56,6 +56,17 @@ abstract class Object{
     if(property_exists($this, $key)) {
       if(isset($data->$key)) {
         $this->$key = new $objectName($this->box, $data->$key);
+      }
+    } else {
+      throw new \Exception("Object '$key' does not exist in class ".get_class($this));
+    }
+  }
+
+  protected function tryCollectionFromData(\stdClass $data, $collectionName, $key) {
+    if(property_exists($this, $key)) {
+      $this->responseFields[] = $key;
+      if(isset($data->$key)) {
+        $this->$key = new $collectionName($this->box, $data->$key);
       }
     } else {
       throw new \Exception("Object '$key' does not exist in class ".get_class($this));

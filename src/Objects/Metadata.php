@@ -5,7 +5,7 @@ use PhpBox\Box;
 use PhpBox\Collections\TemplateFieldCollection;
 
 class Metadata extends Object {
-  protected $meta_template, $meta_scope, $meta_version, $meta_id, $meta_type, $meta_typeVersion;
+  protected $meta_template, $meta_scope, $meta_parent, $meta_version, $meta_id, $meta_type, $meta_typeVersion;
   protected $meta = [];
 
   public function __construct(Box $box, \stdClass $data) {

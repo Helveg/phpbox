@@ -20,7 +20,7 @@ abstract class Item extends Object {
   protected $shared_link;
   protected $metadata;
 
-  public function parseResponse(\stdClass $data) {
+  protected function parseResponse(\stdClass $data) {
     $this->tryFromData($data, ["name"]);
     $this->tryFromData($data, ["permissions", "tags", "is_externally_owned"]);
     $this->tryFromData($data, ["sequence_id","etag","description","size", "item_status",
@@ -38,7 +38,7 @@ abstract class Item extends Object {
     $this->tryObjectFromData($data, User::class, "modified_by");
     $this->tryObjectFromData($data, User::class, "created_by");
     $this->tryObjectFromData($data, Folder::class, "parent");
-    $this->tryObjectFromData($data, ItemCollection::class, "path_collection");
+    $this->tryCollectionFromData($data, ItemCollection::class, "path_collection");
   }
 
   public function getName() {
