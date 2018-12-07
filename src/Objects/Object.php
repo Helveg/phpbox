@@ -12,27 +12,14 @@ abstract class Object{
   protected $responseFields;
 
   const ALL_OBJECTS = [
-    "Collection",
-    "Collaboration",
-    "Comment",
-    "Event",
-    "EventCollection",
-    "File",
-    "Folder",
-    "Group",
-    "GroupMembership",
-    "Item",
-    "ItemCollection",
-    "Metadata",
-    "MetadataCascadePolicy",
-    "MetadataTemplate",
-    "SharedLink",
-    "Task",
-    "TemplateField",
-    "TemplateFieldCollection",
-    "User",
-    "Webhook",
-    "WebLink"
+    "Collaboration","CollaborationWhitelistEntry",
+    "Comment","DevicePinner","Event","File","FileVersion",
+    "FileVersionRetention","Folder","Group","GroupMembership",
+    "Item","LegalHold","LegalHoldPolicy","LegalHoldPolicyAssignment",
+    "Metadata","MetadataCascadePolicy","MetadataTemplate",
+    "RecentItem","RetentionPolicy","RetentionPolicyAssignment","SharedLink",
+    "StoragePolicy","StoragePolicyAssignment","Task","TemplateField",
+    "TermsOfService","User","Webhook","WebLink"
   ];
 
   public function __construct(Box $box, \stdClass $data) {
@@ -101,6 +88,7 @@ abstract class Object{
 
   public function request($fields = []) {
     $managerName = basename(static::class);
+    if(!property_exists($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot be requested by id. (No manager in PhpBox.)");
     if($this->box->$managerName->request($this->id, $fields))
       $this->parseResponse($this->box->getResponse());
     return $this;
