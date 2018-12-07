@@ -1,5 +1,7 @@
 # phpbox
-Implementation of several aspects of the Box v2.0 API. STILL VERY HEAVILY UNDER DEVELOPMENT (package is 5 days old, any feedback on GitHub would be appreciated)
+Implementation of several aspects of the Box v2.0 API. STILL VERY HEAVILY UNDER DEVELOPMENT (any feedback on GitHub would be appreciated)
+
+[![Build Status](https://travis-ci.com/Helveg/phpbox.svg?branch=master)](https://travis-ci.com/Helveg/phpbox)
 
 ## Installation
 Install via `composer require robindeschepper/phpbox`.
@@ -20,16 +22,46 @@ This will use your json config file to request an access token via JWT. The toke
 
 ## Model
 
-I have created classes for the following objects in the Box API: Collaboration, File, Folder, Group, GroupMembership, SharedLink and User. More will follow.
+I have created classes for the following objects in the Box API:
 
-Each of these objects has a Manager. These managers are used to create, request, delete, update, or perform any other action on the corresponding endpoint in the Box API. Some examples:
+```
+Collaboration, CollaborationWhitelistEntry,
+     Comment, DevicePinner, Event, File, FileVersion,
+     FileVersionRetention, Folder, Group, GroupMembership,
+     Item, LegalHold, LegalHoldPolicy, LegalHoldPolicyAssignment,
+     Metadata, MetadataCascadePolicy, MetadataTemplate,
+     RecentItem, RetentionPolicy, RetentionPolicyAssignment, SharedLink,
+     StoragePolicy, StoragePolicyAssignment, Task, TemplateField,
+     TermsOfService, User, Webhook, WebLink
+```
+
+These objects are populated by analyzing the JSON payload received from Box using Guzzle requests. Each field in the returned JSON object will become a property in the PhpBox object.
+
+### Example of JSON to PhpBox object
+
+```json
+{
+	"id": "1234",
+	"type": "file_version",
+	"file": {
+		"id": "125",
+		"type": "file"
+	},
+	"version": "2"
+}
+```
+This will become an object of type `PhpBox\Objects\FileVersion` with fields `id`, `type`, `version`and `file` (of type `PhpBox\Objects\File`).
+
+### Managers
+
+Some of these objects will have a Manager in the PhpBox object that is used to perform the actions described for each object in the Box API reference such as creating, requesting, deleting, updating, or many other actions.
 
 ```php
-$folder = $box->Folder->create("0", "Bobs Burgers Fan Theories"); // Parent id/object and name.
+$folder = $box->Folder->create("0", "Bobs Burgers Fan Theories"); // Creates a folder. Parameters: 1) Parent id/object 2) name.
 $myFile = $box->File->request("123456789", ["trashed_at","modified_at"]); // Request file object with 2 extra fields trashed_at & modified_at
 ```
 
-Similar calls can be made on each of these managers and a detailed explanation will follow when v0.1beta is released which should contain most of the objects on Box.
+Similar calls can be made on each of these managers and a detailed explanation will follow when v0.2.1 is released which will focus on implementing core actions shared among all managers such as creating or deleting objects.
 
 
 ## Exchange Tokens
