@@ -23,7 +23,7 @@ abstract class Object{
   ];
 
   public static function getEndpoint() {
-    $className = basename(static::class);
+    $className = array_pop(explode("\\",static::class));
     $boxObjectName = Object::toBoxObjectString($className);
     // eg "policy" to "policies"
     if(substr($boxObjectName,-1) == "y") $boxObjectName = substr($boxObjectName, 0, strlen($boxObjectName) - 1)."ie";
@@ -59,9 +59,7 @@ abstract class Object{
   }
 
   protected function tryObjectFromData(\stdClass $data, $objectName, $key) {
-    var_dump($objectName);
-    var_dump(basename($objectName));
-    if(!in_array(basename($objectName), self::ALL_OBJECTS)) throw new \Exception("'$objectName' is not a PhpBox\\Object or Collection type.");
+    if(!in_array(array_pop(explode("\\",$objectName)), self::ALL_OBJECTS)) throw new \Exception("'$objectName' is not a PhpBox\\Object or Collection type.");
     $this->responseFields[] = $key;
     if(property_exists($this, $key)) {
       if(isset($data->$key)) {
@@ -88,7 +86,7 @@ abstract class Object{
     $isObject = "is$objectName";
     if(substr($name, 0, 2) == "is" && in_array($objectName, self::ALL_OBJECTS)) {
       // isObject()
-      return $this->type == self::toBoxObjectString(basename(static::class));
+      return $this->type == self::toBoxObjectString(array_pop(explode("\\",static::class)));
     } elseif(substr($name, 0, 2) == "to" && in_array($objectName, self::ALL_OBJECTS)) {
       // toObject()
       if($this->$isObject()) return new $objectName($this->box, $this->data);
@@ -108,7 +106,7 @@ abstract class Object{
   }
 
   public function request($fields = []) {
-    $managerName = basename(static::class);
+    $managerName = array_pop(explode("\\",static::class));
     if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot be requested by id. (No manager in PhpBox.)");
     if($this->box->$managerName->request($this->id, $fields)) {
       $this->parseResponse($this->box->getResponseJSON());
