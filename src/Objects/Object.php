@@ -59,6 +59,8 @@ abstract class Object{
   }
 
   protected function tryObjectFromData(\stdClass $data, $objectName, $key) {
+    var_dump($objectName);
+    var_dump(basename($objectName));
     if(!in_array(basename($objectName), self::ALL_OBJECTS)) throw new \Exception("'$objectName' is not a PhpBox\\Object or Collection type.");
     $this->responseFields[] = $key;
     if(property_exists($this, $key)) {
