@@ -119,6 +119,12 @@ abstract class Object{
     return $this;
   }
 
+  public function delete($query = []) {
+    $managerName = Object::short(static::class);
+    if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot delete themselves. (No manager in PhpBox.)");
+    $this->box->$managerName->delete($this, $query);
+  }
+
   /**
    * Differentiate generic response data into an Object type based on the `type`
    * field if such a class exists. If it doesn't a generic Object is returned.

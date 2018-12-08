@@ -8,7 +8,7 @@ Install via `composer require robindeschepper/phpbox`.
 
 ## Getting Started
 
-Currently it only connects via a Box [JWT](https://developer.box.com/docs/construct-jwt-claim-manually) JSON config file. Accessing your box app is done like this:
+Currently it connects via a Box [JWT](https://developer.box.com/docs/construct-jwt-claim-manually) JSON config file or through setting of the values on the Config object. Accessing your box app is done like this:
 ```php
 require_once("vendor/autoload.php");
 use PhpBox\Box;
