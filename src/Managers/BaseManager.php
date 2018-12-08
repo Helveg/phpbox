@@ -12,7 +12,7 @@ class BaseManager {
   }
 
   protected function base_request($url, $fields = [], $query = []) {
-    $className = array_pop(explode("\\",static::class));
+    $className = Object::short(static::class);
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
     $boxObjectName = Object::toBoxObjectString($objectName);
@@ -24,7 +24,7 @@ class BaseManager {
 
   protected function base_create($params = [], $fields = []) {
     // https://upload.box.com/api/2.0/files/content
-    $className = array_pop(explode("\\",static::class));
+    $className = Object::short(static::class);
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
     $boxObjectName = Object::toBoxObjectString($objectName);

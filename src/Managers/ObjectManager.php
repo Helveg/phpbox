@@ -7,7 +7,7 @@ use \PhpBox\Objects\Object;
 class ObjectManager extends BaseManager{
 
   public function request($id, $fields = [], $query = []) {
-    $className = array_pop(explode("\\",static::class));
+    $className = Object::short(static::class);
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
     $boxObjectName = Object::toBoxObjectString($objectName);
@@ -22,7 +22,7 @@ class ObjectManager extends BaseManager{
   }
 
   public function delete($id, $query = []) {
-    $className = array_pop(explode("\\",static::class));
+    $className = Object::short(static::class);
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
     $endpoint = $objectClassName::getEndpoint();
