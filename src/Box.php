@@ -27,7 +27,8 @@ class Box {
     }
   }
 
-  public function requestAccessToken() {
+  public function requestToken($sub_type, $sub) {
+    $this->config->setConnectionDetails($sub_type, $sub);
     $appDetails = $this->config->getAppDetails();
     $assertion = $this->config->writeAssertion();
     $client = new \GuzzleHttp\Client();
@@ -41,9 +42,17 @@ class Box {
     ]);
     if($response->getStatusCode() == 200) {
       $data = $response->getBody()->getContents();
-      $this->AccessToken = new Token($this, json_decode($data));
+      return new Token($this, json_decode($data));
     }
     return false;
+  }
+
+  public function requestAccessToken() {
+    return $this->AccessToken = $this->requestToken('enterprise', $this->config->getEnterpriseId());
+  }
+
+  public function requestUserToken($userId) {
+    $this->requestToken('user', $userId);
   }
 
   public function requestExchangeToken($scopes = ["base_preview", "item_download"], $folder = NULL, $token = NULL) {

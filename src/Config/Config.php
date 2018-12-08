@@ -10,10 +10,15 @@ class Config implements ConfigInterface {
   protected $sk_pass;
   protected $clientId;
   protected $clientSecret;
+  protected $enterpriseId;
   protected $assertType, $assertId;
 
   public function __construct() {
 
+  }
+
+  public function getEnterpriseId() {
+    return $this->getEnterpriseId();
   }
 
   public function getAppDetails() {
@@ -38,6 +43,10 @@ class Config implements ConfigInterface {
     return \Firebase\JWT\JWT::encode($claims, $key, 'RS512');
   }
 
+  public function setEnterpriseId($id) {
+    $this->enterpriseId = $id;
+  }
+
   public function setAppDetails($clientId, $clientSecret) {
     $this->clientId = $clientId;
     $this->clientSecret = $clientSecret;
@@ -53,6 +62,7 @@ class Config implements ConfigInterface {
   }
 
   public function setConnectionDetails($sub_type, $sub) {
+    if($sub_type === 'enterprise') $this->enterpriseId = $sub;
     $this->assertType = $sub_type;
     $this->assertId = $sub;
   }
