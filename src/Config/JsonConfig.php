@@ -16,17 +16,20 @@ class JsonConfig extends Config implements ConfigInterface {
 
     try { // Load configuration details
       $missing = 'private key (boxAppSettings.appAuth.privateKey)';
-      $this->sk_key = $config->boxAppSettings->appAuth->privateKey;
+      $sk_key = $config->boxAppSettings->appAuth->privateKey;
       $missing = 'private key passphrase (boxAppSettings.appAuth.passphrase)';
-      $this->sk_pass = $config->boxAppSettings->appAuth->passphrase;
+      $sk_pass = $config->boxAppSettings->appAuth->passphrase;
+      $this->setPrivateKey($sk_key, $sk_pass);
       $missing = 'public key (boxAppSettings.appAuth.publicKeyID)';
-      $this->pk_key = $config->boxAppSettings->appAuth->publicKeyID;
+      $this->setPublicKey($config->boxAppSettings->appAuth->publicKeyID);
       $missing = 'client id (boxAppSettings.clientID)';
-      $this->clientId = $config->boxAppSettings->clientID;
+      $clientId = $config->boxAppSettings->clientID;
       $missing = 'client id (boxAppSettings.clientSecret)';
-      $this->clientSecret = $config->boxAppSettings->clientSecret;
+      $clientSecret = $config->boxAppSettings->clientSecret;
+      $this->setAppDetails($clientId, $clientSecret);
       $missing = 'enterprise id (enterpriseID)';
-      $this->enterpriseId = $config->enterpriseID;
+      $assertId = $config->enterpriseID;
+      $this->setConnectionDetails('enterprise', $assertId); // Default setting connects to enterprise.
     } catch(Exception $e) {
       throw new FileFormatException($filename, "missing $missing. Take a look at the Box documentation (https://developer.box.com/docs/setting-up-a-jwt-app#section-step-2-generate-a-public-private-keypair) or our GitHub pages for an example of a correctly formatted basic json Box-app configuration file.", 1);
     }
