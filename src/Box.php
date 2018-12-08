@@ -53,7 +53,7 @@ class Box {
   }
 
   public function requestUserToken($userId) {
-    $this->requestToken('user', $userId);
+    return $this->requestToken('user', $userId);
   }
 
   public function requestExchangeToken($scopes = ["base_preview", "item_download"], $folder = NULL, $token = NULL) {
