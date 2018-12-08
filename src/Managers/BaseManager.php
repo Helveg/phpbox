@@ -22,14 +22,13 @@ class BaseManager {
     return $ret;
   }
 
-  protected function base_create($params = [], $fields = []) {
+  protected function base_create($params = [], $fields = [], $query = []) {
     // https://upload.box.com/api/2.0/files/content
     $className = Object::short(static::class);
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
-    $boxObjectName = Object::toBoxObjectString($objectName);
-    $response = $this->box->guzzle('POST', "{$boxObjectName}s/", [
-      'query' => Box::fieldsQuery($fields),
+    $response = $this->box->guzzle('POST', $objectClassName::getEndpoint(), [
+      'query' => Box::fieldsQuery($fields, $query),
       'json' => $params
     ]);
     if($response) {

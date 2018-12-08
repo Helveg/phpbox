@@ -17,7 +17,11 @@ class Box {
     $this->config = $config;
     // Request access token
     if($token != "") {
-      $this->AccessToken = new Token($this, $token);
+      if($token instanceof Token) {
+        $this->AccessToken = $token;
+      } else {
+        $this->AccessToken = new Token($this, $token);
+      }
     } else {
       $this->requestAccessToken();
     }
@@ -86,6 +90,25 @@ class Box {
     return $this->AccessToken;
   }
 
+  public function useToken($token) {
+    return new self($this->config, $token);
+  }
+
+  public function asUser($userId) {
+    throw new \Exception("Not implemented yet.");
+    $nBox = new self($this->config, $this->getAccessToken());
+    $nBox->setAsUser($userId);
+    return $nBox;
+  }
+
+  public function setAsUser($userId) {
+    throw new \Exception("Not implemented yet.");
+  }
+
+  public function clearAsUser() {
+    throw new \Exception("Not implemented yet.");
+  }
+
   public function guzzle($method, $endpoint, $params, $responseHandler = NULL) {
     $params['debug'] = self::$guzzleDebug;
     // Default headers
@@ -108,6 +131,8 @@ class Box {
             case 200:
             case 201:
               return $this->lastResponseJSON = json_decode($response->getBody()->getContents());
+            case 400:
+              $this->lastResponseJSON = json_decode($response->getBody()->getContents());
           }
         }
       } else {
