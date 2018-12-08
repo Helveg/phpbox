@@ -61,14 +61,14 @@ class Folder extends Item {
   public function getFileByName($name) {
     $this->checkItems();
     $arr = array_filter($this->getFiles()->getArrayCopy(),function($x) use ($name) {return $x->name == $name;});
-    if(count($arr) === 1) return $arr[0];
+    if(count($arr) === 1) return array_values($arr)[0];
     return false;
   }
 
   public function getFolderByName($name) {
     $this->checkItems();
     $arr = array_filter($this->getFolders()->getArrayCopy(),function($x) use ($name) {return $x->name == $name;});
-    if(count($arr) === 1) return $arr[0];
+    if(count($arr) === 1) return array_values($arr)[0];
     return false;
   }
 
