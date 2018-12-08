@@ -22,7 +22,7 @@ function testOK($msg) {
 
 $config = new Config();
 $config->setAppDetails($boxClientId, $boxClientSecret);
-$config->setPrivateKey($boxPrivateKey,$boxPrivateKeyPass);
+$config->setPrivateKey(str_replace("\\n","\n",$boxPrivateKey),$boxPrivateKeyPass);
 $config->setPublicKey($boxPublicKey);
 $config->setConnectionDetails('enterprise', $boxEnterpriseId);
 
