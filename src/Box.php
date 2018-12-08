@@ -136,23 +136,6 @@ class Box {
     return $query;
   }
 
-  public function createAppUser(string $name, $params = [], $fields = []) {
-    $params['name'] = $name;
-    $params['is_platform_access_only'] = true;
-    return $this->guzzleCreate("User", $params, $fields);
-  }
-
-  public function createGroup(string $name, $params = [], $fields = []) {
-    $params['name'] = $name;
-    if(!($ret = $this->guzzleCreate("Group", $params, $fields))) {
-      $error = $this->getResponseCode();
-      if($error == 409) {
-        throw new BoxException("A group with this name already exists", 409);
-      }
-    }
-    return $ret;
-  }
-
   public function getDefaultHeaders() {
     $token = $this->getAccessToken();
     return [
