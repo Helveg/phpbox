@@ -18,7 +18,7 @@ class Config implements ConfigInterface {
   }
 
   public function getEnterpriseId() {
-    return $this->getEnterpriseId();
+    return $this->enterpriseId;
   }
 
   public function getAppDetails() {

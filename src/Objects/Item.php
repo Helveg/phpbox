@@ -52,8 +52,8 @@ abstract class Item extends Object {
   }
 
   public function getPath() {
-    if($this->getId() === "0") return "/";
-    return implode("/", array_map(function($x){ return $x->getId() === "0" ? "" : $x->getName(); }, $this->getPathFolders()));
+    if($this->id == 0) return "/";
+    return implode("/", array_map(function($x){ return $x->id == 0 ? "" : $x->getName(); }, $this->getPathFolders()));
   }
 }
 

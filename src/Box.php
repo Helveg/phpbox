@@ -7,6 +7,7 @@ use PhpBox\Exception\BoxException;
 
 class Box {
   const baseUrl = "https://api.box.com/2.0/";
+  public static $guzzleDebug = false;
   private $AccessToken;
   private $config;
   private $lastResponseCode;
@@ -68,7 +69,7 @@ class Box {
     ];
     if ($folder != NULL) {
       if ($folder instanceof Item && $folder->isFolder()) {
-        $folder = (string)($folder->getId());
+        $folder = (string)($folder->id);
       }
       $params['resource'] = Folder::endpointUrl.$folder;
     }
@@ -86,6 +87,7 @@ class Box {
   }
 
   public function guzzle($method, $endpoint, $params, $responseHandler = NULL) {
+    $params['debug'] = self::$guzzleDebug;
     // Default headers
     if(!isset($params['headers'])) $params['headers'] = $this->getDefaultHeaders();
     else $params['headers'] = array_merge($this->getDefaultHeaders(), $params['headers']);
@@ -130,12 +132,6 @@ class Box {
     return $query;
   }
 
-  public function requestGroupMembership($id, $fields = []) {
-    if($id instanceof Object && $id->isGroupMembership()) $id = $id->getId();
-    if($ret = $this->guzzleObject("group_memberships/$id", $fields)) $ret = new GroupMembership($this, $ret);
-    return $ret;
-  }
-
   public function createAppUser(string $name, $params = [], $fields = []) {
     $params['name'] = $name;
     $params['is_platform_access_only'] = true;
@@ -151,12 +147,6 @@ class Box {
       }
     }
     return $ret;
-  }
-
-  public function createGroupMembership(User $user, Group $group, $params = [], $fields = []) {
-    $params["user"] = ["id" => $user->getId()];
-    $params["group"] = ["id" => $group->getId()];
-    $this->guzzleCreate("GroupMembership", $params, $fields);
   }
 
   public function getDefaultHeaders() {

@@ -12,7 +12,7 @@ class ItemManager extends ObjectManager {
       $parent = "0";
     }
     if($parent instanceof Object && $parent->isItem()) {
-      $parent = $parent->getId();
+      $parent = $parent->id;
     }
     $params['name'] = $name;
     $params['parent'] = ["id"=>$parent];

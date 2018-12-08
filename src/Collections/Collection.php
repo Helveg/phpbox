@@ -6,8 +6,14 @@ use \PhpBox\Objects\Object;
 
 class Collection extends \ArrayObject {
   protected $box;
+  protected $marker, $nextmarker, $page, $limit;
 
   public function __construct(Box $box, $data) {
+    if(isset($data->page)) $this->page = $data->page;
+    if(isset($data->marker)) $this->marker = $data->marker;
+    if(isset($data->nextmarker)) $this->nextmarker = $data->nextmarker;
+    if(isset($data->limit)) $this->limit = $data->limit;
+    
     $this->box = $box;
     $arr = [];
     if(is_array($data)) {
