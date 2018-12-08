@@ -25,6 +25,10 @@ $config->setAppDetails($boxClientId, $boxClientSecret);
 $config->setPrivateKey($boxPrivateKey,$boxPrivateKeyPass);
 $config->setPublicKey($boxPublicKey);
 $config->setConnectionDetails('enterprise', $boxEnterpriseId);
+
+echo "Newlines: ".substr_count($boxPrivateKey, "\n")."\n";
+echo "Escaped newlines: ".substr_count($boxPrivateKey, "\\n")."\n";
+
 $box = new Box($config);
 
 if(!$box->getAccessToken()) {
