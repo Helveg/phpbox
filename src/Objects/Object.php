@@ -22,6 +22,14 @@ abstract class Object{
     "TermsOfService","User","Webhook","WebLink"
   ];
 
+  public static function getEndpoint() {
+    $className = basename(static::class);
+    $boxObjectName = Object::toBoxObjectString($className);
+    // eg "policy" to "policies"
+    if(substr($boxObjectName,-1) == "y") $boxObjectName = substr($boxObjectName, 0, strlen($boxObjectName) - 1)."ie";
+    return "{$boxObjectName}s/";
+  }
+
   public function __construct(Box $box, \stdClass $data) {
     // Array to store fields with magical readonly access
     // because they are loaded from the guzzle response and are part of the box object
@@ -99,9 +107,10 @@ abstract class Object{
 
   public function request($fields = []) {
     $managerName = basename(static::class);
-    if(!property_exists($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot be requested by id. (No manager in PhpBox.)");
-    if($this->box->$managerName->request($this->id, $fields))
-      $this->parseResponse($this->box->getResponse());
+    if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot be requested by id. (No manager in PhpBox.)");
+    if($this->box->$managerName->request($this->id, $fields)) {
+      $this->parseResponse($this->box->getResponseJSON());
+    }
     return $this;
   }
 

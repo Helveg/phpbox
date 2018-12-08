@@ -26,18 +26,14 @@ $config->setPrivateKey(str_replace("\\n","\n",$boxPrivateKey),$boxPrivateKeyPass
 $config->setPublicKey($boxPublicKey);
 $config->setConnectionDetails('enterprise', $boxEnterpriseId);
 
-echo "Keycheck: ".$boxPrivateKey."\n";
-echo "Newlines: ".substr_count($boxPrivateKey, "\n")."\n";
-echo "Escaped newlines: ".substr_count($boxPrivateKey, "\\n")."\n";
-
 $box = new Box($config);
 
 if(!$box->getAccessToken()) {
-  testError("Couldn't get valid access token", 0);
+  testError("Couldn't get valid access token", 1);
 } else {
   testOK("Access token valid");
 }
-foreach(glob("C:/Users/Robin/GIT/phpbox/src/Objects/*.php") as $file) {
+foreach(glob(__DIR__."/src/Objects/*.php") as $file) {
   require_once($file);
   $obj = basename($file);
   if($obj == "Item.php") continue;
@@ -46,6 +42,29 @@ foreach(glob("C:/Users/Robin/GIT/phpbox/src/Objects/*.php") as $file) {
   $obj = "\\PhpBox\\Objects\\$objShortName";
   $myObj = new $obj($box, (object)["id"=>"5"]);
   testOK("$objShortName can be initialised.");
+}
+
+if($folder = $box->Folder->request("0")) {
+  testOK("Root folder accessed.");
+  if(($count = $folder->getItems()->count()) > 0) {
+    testOK("Item collection with $count items.");
+  } else {
+    testError("Empty root folder");
+  }
+}
+
+if($folder2 = $folder->create("Subfolder test")) {
+  testOK("Created folder in root folder.");
+} else {
+  testError("Couldn't create folder in root folder.");
+}
+
+$folder2->delete();
+
+if($box->getResponseCode() == 204) {
+  testOK("Subfolder deleted.");
+} else {
+  testError("Subfolder couldn't be removed.");
 }
 
 exit(0);

@@ -28,7 +28,7 @@ abstract class Item extends Object {
     $this->tryFromData($data, [
       "created_at","modified_at","trashed_at","purged_at","content_created_at",
       "content_modified_at","expires_at"],
-      function($x){return new DateTime($x);});
+      function($x){return new \DateTime($x);});
     if(isset($data->watermark_info)) {
       $this->responseFields[] = "is_watermarked";
       $this->is_watermarked = $data->watermark_info->is_watermarked;

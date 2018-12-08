@@ -29,6 +29,27 @@ class Folder extends Item {
     return $this->item_collection;
   }
 
+  public function findItems($name) {
+    $ret = [];
+    foreach ($this->item_collection as $key => $value) {
+      if(strpos($name, $value->name) !== FALSE) $ret[] = $value;
+    }
+    return $ret;
+  }
+
+  public function create($name, $content = NULL) {
+    if($content !== NULL) { // File
+      throw new \Exceptiont("File creation not implemented yet.");
+    } else {
+      return $this->box->Folder->create($this, $name);
+    }
+  }
+
+  public function delete($recursive = false) {
+    $query = ["recursive" => $recursive];
+    return $this->box->Folder->delete($this, $query);
+  }
+
 }
 
 ?>

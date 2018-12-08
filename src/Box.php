@@ -107,7 +107,7 @@ class Box {
           switch($response->getStatusCode()) {
             case 200:
             case 201:
-              return json_decode($response->getBody()->getContents());
+              return $this->lastResponseJSON = json_decode($response->getBody()->getContents());
           }
         }
       } else {
@@ -123,6 +123,10 @@ class Box {
 
   public function getResponse() {
     return $this->lastResponse;
+  }
+
+  public function getResponseJSON() {
+    return $this->lastResponseJSON;
   }
 
   public static function fieldsQuery($fields, $query = []) {

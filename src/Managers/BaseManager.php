@@ -28,13 +28,20 @@ class BaseManager {
     $objectName = substr($className, 0, strlen($className) - 7);
     $objectClassName = "\\PhpBox\\Objects\\$objectName";
     $boxObjectName = Object::toBoxObjectString($objectName);
-    var_dump(json_encode($params));
     $response = $this->box->guzzle('POST', "{$boxObjectName}s/", [
       'query' => Box::fieldsQuery($fields),
       'json' => $params
     ]);
     if($response) {
       return new $objectClassName($this->box, $response);
+    }
+    return false;
+  }
+
+  protected function base_delete($url, $query) {
+    $response = $this->box->guzzle('DELETE', $url, ['query' => $query]);
+    if($this->box->getResponseCode() == 204) {
+      return true;
     }
     return false;
   }
