@@ -9,6 +9,10 @@ class UserManager extends ObjectManager {
     $params['is_platform_access_only'] = true;
     return $this->base_create($params, $fields);
   }
+
+  public function request($id = "me", $fields = [], $query = []) {
+    return parent::request($id, $fields, $query);
+  }
 }
 
 ?>
