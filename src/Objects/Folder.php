@@ -5,7 +5,7 @@ use PhpBox\Box;
 use PhpBox\Collections\ItemCollection;
 
 class Folder extends Item {
-  public static $autoRequest = false;
+  public static $autoRequest = true;
   private $self_check_flag = false; // Used in checkItems as recursion flag.
   protected $item_collection;
   protected $folder_upload_email, $sync_state, $can_non_owners_invite;
@@ -22,7 +22,7 @@ class Folder extends Item {
   private function checkItems() {
     if($this->item_collection === NULL) {
       if(self::$autoRequest === false) {
-        throw new \Exception("No item_collection in Folder object. Try calling request to get full folder object or add 'item_collection' to the fields parameter. Alternatively set Folder::\$autoRequest to true to automatically request missing item_collections.");
+        throw new \Exception("No item_collection in Folder object. Try calling request to get full folder object or add 'item_collection' to the fields parameter of the last request performed on this object. Alternatively you might have set Folder::\$autoRequest to false.");
       } elseif($this->self_check_flag) {
         throw new \Exception("Folder item_collection autoRequest failed: item_collection not found after requesting folder object.");
       } else {
