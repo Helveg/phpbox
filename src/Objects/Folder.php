@@ -37,6 +37,18 @@ class Folder extends Item {
     return $ret;
   }
 
+  public function getFileByName($name) {
+    $arr = array_filter(function($x){return $x->name == $name;},$this->getFiles()->getArrayCopy());
+    if(count($arr) === 1) return $arr[0];
+    return false;
+  }
+
+  public function getFolderByName($name) {
+    $arr = array_filter(function($x){return $x->name == $name;},$this->getFolders()->getArrayCopy());
+    if(count($arr) === 1) return $arr[0];
+    return false;
+  }
+
   public function create($name, $content = NULL) {
     if($content !== NULL) { // File
       throw new \Exceptiont("File creation not implemented yet.");
