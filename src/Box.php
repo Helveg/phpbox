@@ -118,6 +118,8 @@ class Box {
     $client = new \GuzzleHttp\Client(["base_uri" => self::baseUrl, "http_errors" => false]);
     try {
       $response = $client->request($method, $endpoint."?name=RRR", $params);
+    } catch(\Exception $e) {
+      $response = false;
     }
     finally {
       $this->lastResponse = $response;
@@ -133,6 +135,8 @@ class Box {
               return $this->lastResponseJSON = json_decode($response->getBody()->getContents());
             case 400:
               $this->lastResponseJSON = json_decode($response->getBody()->getContents());
+              if($this->lastResponseJSON->code == 'user_already_collaborator')
+                throw new \Exception("User is already a collaborator on this item.");
           }
         }
       } else {

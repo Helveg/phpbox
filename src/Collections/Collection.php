@@ -13,7 +13,7 @@ class Collection extends \ArrayObject {
     if(isset($data->marker)) $this->marker = $data->marker;
     if(isset($data->nextmarker)) $this->nextmarker = $data->nextmarker;
     if(isset($data->limit)) $this->limit = $data->limit;
-    
+
     $this->box = $box;
     $arr = [];
     if(is_array($data)) {
@@ -34,5 +34,10 @@ class Collection extends \ArrayObject {
       if($value->id === $id) return $value;
     }
     return false;
+  }
+
+  public function first() {
+    if($this->count() === 0) throw new \Exception("Can't get first element of empty collection.");
+    return array_values($this->getArrayCopy())[0];
   }
 }

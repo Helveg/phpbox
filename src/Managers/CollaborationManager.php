@@ -17,11 +17,12 @@ class CollaborationManager extends ObjectManager {
       }
     }  elseif($accessible_by instanceof User) {
       $params['accessible_by']['type'] = 'user';
-      $params['accessible_by']['id'] = $accessible_by;
+      $params['accessible_by']['id'] = $accessible_by->id;
     } elseif($accessible_by instanceof Group) {
       $params['accessible_by']['type'] = 'group';
-      $params['accessible_by']['id'] = $accessible_by;
+      $params['accessible_by']['id'] = $accessible_by->id;
     }
+    // $params['accessible_by']['login'] = 'AutomationUser_710566_z3cqAASuvI@boxdevedition.com';
     return $this->base_create($params, $fields, $query);
   }
 }

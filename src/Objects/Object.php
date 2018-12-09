@@ -75,6 +75,12 @@ abstract class Object{
     }
   }
 
+  protected function differentiateFromData(\stdClass $data, $key) {
+    if(!isset($data->$key) || !isset(($data->$key)->type)) return false;
+    if(in_array($phpboxObj = Object::toPhpBoxObjectString(($data->$key)->type), Object::ALL_OBJECTS))
+      $this->tryObjectFromData($data, "\\PhpBox\\Objects\\$phpboxObj", $key);
+  }
+
   protected function tryCollectionFromData(\stdClass $data, $collectionName, $key) {
     if(property_exists($this, $key)) {
       $this->responseFields[] = $key;
