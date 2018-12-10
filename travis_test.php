@@ -37,7 +37,7 @@ foreach(glob(__DIR__."/src/Objects/*.php") as $file) {
   require_once($file);
   $obj = basename($file);
   if($obj == "Item.php") continue;
-  if($obj == "Object.php") continue;
+  if($obj == "BoxObject.php") continue;
   $objShortName = substr($obj, 0, strlen($obj) - 4);
   $obj = "\\PhpBox\\Objects\\$objShortName";
   $myObj = new $obj($box, (object)["id"=>"5"]);
