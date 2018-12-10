@@ -3,7 +3,7 @@
 namespace PhpBox\Objects;
 use PhpBox\Box;
 
-class Group extends Object {
+class Group extends BoxObject {
   protected $name;
   protected $created_at, $modified_at;
 

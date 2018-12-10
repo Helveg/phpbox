@@ -4,7 +4,7 @@ namespace PhpBox\Managers;
 use PhpBox\Box;
 use PhpBox\Collections\Collection;
 
-class GroupManager extends ObjectManager {
+class GroupManager extends BoxObjectManager {
 
   public function create(string $name, $params = [], $fields = []) {
     $params['name'] = $name;

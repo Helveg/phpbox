@@ -1,15 +1,15 @@
 <?php
 
 namespace PhpBox\Managers;
-use PhpBox\Objects\Object;
+use PhpBox\Objects\BoxObject;
 
-class GroupMembershipManager extends ObjectManager {
+class GroupMembershipManager extends BoxObjectManager {
 
   public function create($user, $group, $params = [], $fields = []) {
-    if($user instanceof Object && $user->isUser()) {
+    if($user instanceof BoxObject && $user->isUser()) {
       $user = $user->id;
     }
-    if($group instanceof Object && $group->isUser()) {
+    if($group instanceof BoxObject && $group->isUser()) {
       $group = $group->id;
     }
     $params['group'] = ["id"=>$group];

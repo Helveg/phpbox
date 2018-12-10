@@ -7,6 +7,6 @@ class StoragePolicyAssignment extends Assignment {
 
   protected function parseResponse(\stdClass $data) {
     $this->tryFromData($data, ["storage_policy"]);
-    $this->tryObjectFromData($data, Item::class, "assigned_to");
+    $this->tryBoxObjectFromData($data, Item::class, "assigned_to");
   }
 }

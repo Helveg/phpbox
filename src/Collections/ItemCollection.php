@@ -2,7 +2,7 @@
 
 namespace PhpBox\Collections;
 use \PhpBox\Box;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\BoxObject;
 
 class ItemCollection extends Collection {
   public function byName($name) {

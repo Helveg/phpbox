@@ -3,7 +3,7 @@
 namespace PhpBox\Objects;
 use PhpBox\Box;
 
-abstract class Object{
+abstract class BoxObject{
   abstract protected function parseResponse(\stdClass $data);
   protected $box;
   protected $data;
@@ -11,7 +11,7 @@ abstract class Object{
   protected $type;
   protected $responseFields;
 
-  const ALL_OBJECTS = [
+  const ALL_Objects = [
     "Collaboration","CollaborationWhitelistEntry",
     "Comment","DevicePinner","Event","File","FileVersion",
     "FileVersionRetention","Folder","Group","GroupMembership",
@@ -28,16 +28,16 @@ abstract class Object{
   }
 
   public static function getEndpoint() {
-    $className = Object::short(static::class);
-    $boxObjectName = Object::toBoxObjectString($className);
+    $className = BoxObject::short(static::class);
+    $boxBoxObjectName = BoxObject::toBoxObjectstring($className);
     // eg "policy" to "policies"
-    if(substr($boxObjectName,-1) == "y") $boxObjectName = substr($boxObjectName, 0, strlen($boxObjectName) - 1)."ie";
-    return "{$boxObjectName}s/";
+    if(substr($boxBoxObjectName,-1) == "y") $boxBoxObjectName = substr($boxBoxObjectName, 0, strlen($boxBoxObjectName) - 1)."ie";
+    return "{$boxBoxObjectName}s/";
   }
 
   public function __construct(Box $box, \stdClass $data) {
     // Array to store fields with magical readonly access
-    // because they are loaded from the guzzle response and are part of the box object
+    // because they are loaded from the guzzle response and are part of the box BoxObject
     $this->responseFields = ["id","type"];
     $this->box = $box;
     $this->data = $data;
@@ -63,22 +63,22 @@ abstract class Object{
     }
   }
 
-  protected function tryObjectFromData(\stdClass $data, $objectName, $key) {
-    if(!in_array(Object::short($objectName), self::ALL_OBJECTS)) throw new \Exception("'$objectName' is not a PhpBox\\Object or Collection type.");
+  protected function tryBoxObjectFromData(\stdClass $data, $BoxObjectName, $key) {
+    if(!in_array(BoxObject::short($BoxObjectName), self::ALL_Objects)) throw new \Exception("'$BoxObjectName' is not a PhpBox\\BoxObject or Collection type.");
     $this->responseFields[] = $key;
     if(property_exists($this, $key)) {
       if(isset($data->$key)) {
-        $this->$key = new $objectName($this->box, $data->$key);
+        $this->$key = new $BoxObjectName($this->box, $data->$key);
       }
     } else {
-      throw new \Exception("Object '$key' does not exist in class ".get_class($this));
+      throw new \Exception("BoxObject '$key' does not exist in class ".get_class($this));
     }
   }
 
   protected function differentiateFromData(\stdClass $data, $key) {
     if(!isset($data->$key) || !isset(($data->$key)->type)) return false;
-    if(in_array($phpboxObj = Object::toPhpBoxObjectString(($data->$key)->type), Object::ALL_OBJECTS))
-      $this->tryObjectFromData($data, "\\PhpBox\\Objects\\$phpboxObj", $key);
+    if(in_array($phpboxObj = BoxObject::toPhpBoxObjectstring(($data->$key)->type), BoxObject::ALL_Objects))
+      $this->tryBoxObjectFromData($data, "\\PhpBox\\Objects\\$phpboxObj", $key);
   }
 
   protected function tryCollectionFromData(\stdClass $data, $collectionName, $key) {
@@ -88,20 +88,20 @@ abstract class Object{
         $this->$key = new $collectionName($this->box, $data->$key);
       }
     } else {
-      throw new \Exception("Object '$key' does not exist in class ".get_class($this));
+      throw new \Exception("BoxObject '$key' does not exist in class ".get_class($this));
     }
   }
 
   public function __call($name, $args) {
-    $objectName = substr($name, 2);
-    $isObject = "is$objectName";
-    if(substr($name, 0, 2) == "is" && in_array($objectName, self::ALL_OBJECTS)) {
-      // isObject()
-      return $this->type == self::toBoxObjectString(Object::short(static::class));
-    } elseif(substr($name, 0, 2) == "to" && in_array($objectName, self::ALL_OBJECTS)) {
-      // toObject()
-      if($this->$isObject()) return new $objectName($this->box, $this->data);
-      throw new Exception("This is not a $objectName.");
+    $BoxObjectName = substr($name, 2);
+    $isBoxObject = "is$BoxObjectName";
+    if(substr($name, 0, 2) == "is" && in_array($BoxObjectName, self::ALL_Objects)) {
+      // isBoxObject()
+      return $this->type == self::toBoxObjectstring(BoxObject::short(static::class));
+    } elseif(substr($name, 0, 2) == "to" && in_array($BoxObjectName, self::ALL_Objects)) {
+      // toBoxObject()
+      if($this->$isBoxObject()) return new $BoxObjectName($this->box, $this->data);
+      throw new Exception("This is not a $BoxObjectName.");
     }
     throw new \Exception("Attempt to call unknown method '$name' in '".static::class."'");
   }
@@ -117,7 +117,7 @@ abstract class Object{
   }
 
   public function request($fields = []) {
-    $managerName = Object::short(static::class);
+    $managerName = BoxObject::short(static::class);
     if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot be requested by id. (No manager in PhpBox.)");
     if($this->box->$managerName->request($this->id, $fields)) {
       $this->parseResponse($this->box->getResponseJSON());
@@ -126,40 +126,40 @@ abstract class Object{
   }
 
   public function delete($query = []) {
-    $managerName = Object::short(static::class);
+    $managerName = BoxObject::short(static::class);
     if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot delete themselves. (No manager in PhpBox.)");
     $this->box->$managerName->delete($this, $query);
   }
 
   /**
-   * Differentiate generic response data into an Object type based on the `type`
-   * field if such a class exists. If it doesn't a generic Object is returned.
+   * Differentiate generic response data into an BoxObject type based on the `type`
+   * field if such a class exists. If it doesn't a generic BoxObject is returned.
    *
    * Follows this naming convention:
    * * "file" => \PhpBox\Objects\File
    * * "file_version" => \PhpBox\Objects\FileVersion
-   * @param  \PhpBox\Box      $box  Box connection that provided this object
+   * @param  \PhpBox\Box      $box  Box connection that provided this BoxObject
    * @param  \stdClass $data        Parsed JSON response
-   * @return \PhpBox\Objects\Object (Un)differentiated Object.
+   * @return \PhpBox\Objects\BoxObject (Un)differentiated BoxObject.
    */
   public static function differentiate(Box $box, \stdClass $data) {
     if(isset($data->type)) {
-      $objectName = self::toPhpBoxObjectString($data->type);
-      $className = "\PhpBox\Objects\\$objectName"; // snake_case to CamelCase
-      if(in_array($objectName, self::ALL_OBJECTS)) {
+      $BoxObjectName = self::toPhpBoxObjectstring($data->type);
+      $className = "\PhpBox\Objects\\$BoxObjectName"; // snake_case to CamelCase
+      if(in_array($BoxObjectName, self::ALL_Objects)) {
         return new $className($box, $data);
       }
     }
-    throw new \Exception("Unknown box object type received: '{$data->type}'");
+    throw new \Exception("Unknown box BoxObject type received: '{$data->type}'");
   }
 
-  public static function toPhpBoxObjectString($boxobject) {
-    return str_replace("_", "", ucwords($boxobject, "_"));
+  public static function toPhpBoxObjectstring($boxBoxObject) {
+    return str_replace("_", "", ucwords($boxBoxObject, "_"));
   }
 
-  public static function toBoxObjectString($phpboxobject) {
+  public static function toBoxObjectstring($phpboxBoxObject) {
     // Thanks to cletus@StackOverflow https://stackoverflow.com/users/18393/cletus
-    preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $phpboxobject, $matches);
+    preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $phpboxBoxObject, $matches);
     $ret = $matches[0];
     foreach ($ret as &$match) {
       $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);

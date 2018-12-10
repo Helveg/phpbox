@@ -4,7 +4,7 @@ namespace PhpBox\Objects;
 use PhpBox\Box;
 use PhpBox\Collections\ItemCollection;
 
-class Item extends Object {
+class Item extends BoxObject {
   protected $name, $item_status;
   protected $size, $description, $sequence_id, $etag, $created_at;
   protected $modified_at, $trashed_at, $purged_at, $content_created_at;
@@ -33,11 +33,11 @@ class Item extends Object {
       $this->responseFields[] = "is_watermarked";
       $this->is_watermarked = $data->watermark_info->is_watermarked;
     }
-    $this->tryObjectFromData($data, SharedLink::class, "shared_link");
-    $this->tryObjectFromData($data, User::class, "owned_by");
-    $this->tryObjectFromData($data, User::class, "modified_by");
-    $this->tryObjectFromData($data, User::class, "created_by");
-    $this->tryObjectFromData($data, Folder::class, "parent");
+    $this->tryBoxObjectFromData($data, SharedLink::class, "shared_link");
+    $this->tryBoxObjectFromData($data, User::class, "owned_by");
+    $this->tryBoxObjectFromData($data, User::class, "modified_by");
+    $this->tryBoxObjectFromData($data, User::class, "created_by");
+    $this->tryBoxObjectFromData($data, Folder::class, "parent");
     $this->tryCollectionFromData($data, ItemCollection::class, "path_collection");
   }
 

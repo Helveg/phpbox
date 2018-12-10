@@ -4,7 +4,7 @@ namespace PhpBox\Objects;
 use PhpBox\Box;
 use PhpBox\Collections\TemplateFieldCollection;
 
-class Metadata extends Object {
+class Metadata extends BoxObject {
   protected $meta_template, $meta_scope, $meta_parent, $meta_version, $meta_id, $meta_type, $meta_typeVersion;
   protected $meta = [];
 

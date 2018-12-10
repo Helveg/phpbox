@@ -22,9 +22,9 @@ class Folder extends Item {
   private function checkItems() {
     if($this->item_collection === NULL) {
       if(self::$autoRequest === false) {
-        throw new \Exception("No item_collection in Folder object. Try calling request to get full folder object or add 'item_collection' to the fields parameter of the last request performed on this object. Alternatively you might have set Folder::\$autoRequest to false.");
+        throw new \Exception("No item_collection in Folder BoxObject. Try calling request to get full folder BoxObject or add 'item_collection' to the fields parameter of the last request performed on this BoxObject. Alternatively you might have set Folder::\$autoRequest to false.");
       } elseif($this->self_check_flag) {
-        throw new \Exception("Folder item_collection autoRequest failed: item_collection not found after requesting folder object.");
+        throw new \Exception("Folder item_collection autoRequest failed: item_collection not found after requesting folder BoxObject.");
       } else {
         $this->request();
         $this->self_check_flag = true;

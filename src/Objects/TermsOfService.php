@@ -2,7 +2,7 @@
 
 namespace PhpBox\Objects;
 
-class TermsOfService extends Object {
+class TermsOfService extends BoxObject {
   protected $status, $enterprise, $tos_type, $text, $created_at, $modified_at;
   protected function parseResponse(\stdClass $data) {
     $this->tryFromData($data, ["status","enterprise","tos_type","text"]);

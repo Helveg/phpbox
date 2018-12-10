@@ -2,7 +2,7 @@
 
 namespace PhpBox\Objects;
 
-class Policy extends Object {
+class Policy extends BoxObject {
 
   protected function parseResponse(\stdClass $data) {
 

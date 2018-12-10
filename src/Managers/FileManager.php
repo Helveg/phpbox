@@ -2,7 +2,7 @@
 
 namespace PhpBox\Managers;
 
-class FileManager extends ObjectManager {
+class FileManager extends BoxObjectManager {
 
 }
 

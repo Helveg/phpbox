@@ -2,7 +2,7 @@
 
 namespace PhpBox\Collections;
 use \PhpBox\Box;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\BoxObject;
 
 class Collection extends \ArrayObject {
   protected $box;
@@ -21,7 +21,7 @@ class Collection extends \ArrayObject {
     } elseif($data instanceof \stdClass) {
       if(!isset($data->entries)) throw new \Exception("Invalid collection data: does not contain an 'entries' field.");
       foreach ($data->entries as $entry) {
-        $arr[] = Object::differentiate($box, $entry);
+        $arr[] = BoxObject::differentiate($box, $entry);
       }
     } else {
       throw new \Exception("Invalid data passed to collection constructor: must be either array or stdClass (json data)");

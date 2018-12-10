@@ -3,7 +3,7 @@
 namespace PhpBox\Objects;
 use PhpBox\Box;
 
-class GroupMembership extends Object {
+class GroupMembership extends BoxObject {
   protected $user;
   protected $group;
   protected $role;

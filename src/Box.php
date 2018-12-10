@@ -2,7 +2,7 @@
 
 namespace PhpBox;
 use PhpBox\Config\Config;
-use PhpBox\Objects\{Object, Item, Folder, File, User};
+use PhpBox\Objects\{BoxObject, Item, Folder, File, User};
 use PhpBox\Exception\BoxException;
 
 class Box {

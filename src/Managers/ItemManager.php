@@ -1,9 +1,9 @@
 <?php
 
 namespace PhpBox\Managers;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\BoxObject;
 
-class ItemManager extends ObjectManager {
+class ItemManager extends BoxObjectManager {
   
 }
 

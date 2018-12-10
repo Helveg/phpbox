@@ -2,11 +2,11 @@
 
 namespace PhpBox\Objects;
 
-class WebLink extends Object {
+class WebLink extends BoxObject {
   protected $parent, $name, $url, $description;
 
   protected function parseResponse(\stdClass $data) {
     $this->tryFromData($data, ["name","url","description"]);
-    $this->tryObjectFromData($data, Item::class, "parent");
+    $this->tryBoxObjectFromData($data, Item::class, "parent");
   }
 }

@@ -3,7 +3,7 @@
 namespace PhpBox\Managers;
 use PhpBox\Objects\{Item,User,Group};
 
-class CollaborationManager extends ObjectManager {
+class CollaborationManager extends BoxObjectManager {
 
   public function create(Item $item, $accessible_by, $role = "previewer", $query = [], $params = [], $fields = []) {
     $params['accessible_by'] = [];

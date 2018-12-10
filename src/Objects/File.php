@@ -14,7 +14,7 @@ class File extends Item {
     $this->tryFromData($data, ["sha1","version_number","comment_count",
       "extension","is_package",
       "expiring_embed_link"]);
-    $this->tryObjectFromData($data, FileVersion::class, "Version", "file_version");
+    $this->tryBoxObjectFromData($data, FileVersion::class, "Version", "file_version");
   }
 }
 

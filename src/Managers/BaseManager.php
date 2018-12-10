@@ -2,7 +2,7 @@
 
 namespace PhpBox\Managers;
 use \PhpBox\Box;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\BoxObject;
 
 class BaseManager {
   protected $box;
@@ -12,27 +12,27 @@ class BaseManager {
   }
 
   protected function base_request($url, $fields = [], $query = []) {
-    $className = Object::short(static::class);
-    $objectName = substr($className, 0, strlen($className) - 7);
-    $objectClassName = "\\PhpBox\\Objects\\$objectName";
-    $boxObjectName = Object::toBoxObjectString($objectName);
+    $className = BoxObject::short(static::class);
+    $BoxObjectName = substr($className, 0, strlen($className) - 7);
+    $BoxObjectClassName = "\\PhpBox\\Objects\\$BoxObjectName";
+    $boxBoxObjectName = BoxObject::toBoxObjectstring($BoxObjectName);
     $query = Box::fieldsQuery($fields);
     if($ret = $this->box->guzzle("GET", $url, ["query" => $query]))
-      $ret = new $objectClassName($this->box, $ret);
+      $ret = new $BoxObjectClassName($this->box, $ret);
     return $ret;
   }
 
   protected function base_create($params = [], $fields = [], $query = []) {
     // https://upload.box.com/api/2.0/files/content
-    $className = Object::short(static::class);
-    $objectName = substr($className, 0, strlen($className) - 7);
-    $objectClassName = "\\PhpBox\\Objects\\$objectName";
-    $response = $this->box->guzzle('POST', $objectClassName::getEndpoint(), [
+    $className = BoxObject::short(static::class);
+    $BoxObjectName = substr($className, 0, strlen($className) - 7);
+    $BoxObjectClassName = "\\PhpBox\\Objects\\$BoxObjectName";
+    $response = $this->box->guzzle('POST', $BoxObjectClassName::getEndpoint(), [
       'query' => Box::fieldsQuery($fields, $query),
       'json' => $params
     ]);
     if($response) {
-      return new $objectClassName($this->box, $response);
+      return new $BoxObjectClassName($this->box, $response);
     }
     return false;
   }

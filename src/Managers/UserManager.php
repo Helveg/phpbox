@@ -2,7 +2,7 @@
 
 namespace PhpBox\Managers;
 
-class UserManager extends ObjectManager {
+class UserManager extends BoxObjectManager {
 
   public function createAppUser(string $name, $params = [], $fields = []) {
     $params['name'] = $name;

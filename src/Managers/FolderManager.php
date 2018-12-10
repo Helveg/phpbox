@@ -1,7 +1,7 @@
 <?php
 
 namespace PhpBox\Managers;
-use \PhpBox\Objects\Object;
+use \PhpBox\Objects\BoxObject;
 
 class FolderManager extends ItemManager {
 
@@ -11,7 +11,7 @@ class FolderManager extends ItemManager {
       $name = $parent; // If only 1 argument is given use it as the name of a new folder in the root folder.
       $parent = "0";
     }
-    if($parent instanceof Object && $parent->isItem()) {
+    if($parent instanceof BoxObject && $parent->isItem()) {
       $parent = $parent->id;
     }
     $params['name'] = $name;
