@@ -11,6 +11,7 @@ class Box {
   private $AccessToken;
   private $config;
   private $lastResponseCode;
+  private $lastResponseRaw;
   private $lastResponse;
 
   public function __construct(Config $config, $token = "") {
@@ -117,12 +118,13 @@ class Box {
     // Connect
     $client = new \GuzzleHttp\Client(["base_uri" => self::baseUrl, "http_errors" => false]);
     try {
-      $response = $client->request($method, $endpoint."?name=RRR", $params);
+      $response = $client->request($method, $endpoint, $params);
     } catch(\Exception $e) {
       $response = false;
     }
     finally {
       $this->lastResponse = $response;
+      $this->lastResponseRaw = $contents = $response->getBody()->getContents();
       if($response instanceof \GuzzleHttp\Psr7\Response) {
         $this->lastResponseCode = $response->getStatusCode();
         if($responseHandler != NULL) {
@@ -132,9 +134,10 @@ class Box {
           switch($response->getStatusCode()) {
             case 200:
             case 201:
-              return $this->lastResponseJSON = json_decode($response->getBody()->getContents());
+              return $this->lastResponseJSON = json_decode($contents);
             case 400:
-              $this->lastResponseJSON = json_decode($response->getBody()->getContents());
+              $this->lastResponseJSON = json_decode($contents);
+              if($this->lastResponseJSON === NULL) return false; // Empty 400 response. See https://community.box.com/t5/Platform-and-Development-Forum/Empty-response-with-code-400-during-file-upload/m-p/65124#M5738
               if($this->lastResponseJSON->code == 'user_already_collaborator')
                 throw new \Exception("User is already a collaborator on this item.");
           }
@@ -156,6 +159,10 @@ class Box {
 
   public function getResponseJSON() {
     return $this->lastResponseJSON;
+  }
+
+  public function getResponseRaw() {
+    return $this->lastResponseRaw;
   }
 
   public static function fieldsQuery($fields, $query = []) {

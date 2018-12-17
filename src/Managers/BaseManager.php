@@ -44,4 +44,15 @@ class BaseManager {
     }
     return false;
   }
+
+  protected function base_update($id, $params, $query, $fields) {
+    $className = BoxObject::short(static::class);
+    $BoxObjectName = substr($className, 0, strlen($className) - 7);
+    $BoxObjectClassName = "\\PhpBox\\Objects\\$BoxObjectName";
+    $id = $BoxObjectClassName::toId($id);
+    return $this->box->guzzle('PUT', $BoxObjectClassName::getEndpoint().$id, [
+      "json" => $params,
+      "query" => Box::fieldsQuery($fields, $query)
+    ]);
+  }
 }

@@ -18,6 +18,10 @@ class FolderManager extends ItemManager {
     $params['parent'] = ["id"=>$parent];
     return $this->base_create($params, $fields);
   }
+
+  public function request($id = "0", $fields = [], $query = []) {
+    return parent::request($id, $fields, $query);
+  }
 }
 
 ?>

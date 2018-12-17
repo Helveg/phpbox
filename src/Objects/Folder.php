@@ -55,7 +55,7 @@ class Folder extends Item {
     foreach ($this->item_collection as $key => $value) {
       if(strpos($name, $value->name) !== FALSE) $ret[] = $value;
     }
-    return $ret;
+    return new ItemCollection($this->box, $ret);
   }
 
   public function getFileByName($name) {
@@ -85,6 +85,29 @@ class Folder extends Item {
     return $this->box->Folder->delete($this, $query);
   }
 
+  public function rename(string $new_name) {
+    $ret = $this->box->Folder->rename($this, $new_name);
+    if($ret && $this->box->getResponseCode() == 200) {
+      $this->parseResponse($ret);
+    }
+    return $ret;
+  }
+
+  public function description(string $description) {
+    $ret = $this->box->Folder->description($this, $description);
+    if($ret && $this->box->getResponseCode() == 200) {
+      $this->parseResponse($ret);
+    }
+    return $ret;
+  }
+
+  public function move($new_folder) {
+    $ret = $this->box->Folder->move($this, $new_folder);
+    if($ret && $this->box->getResponseCode() == 200) {
+      $this->parseResponse($ret);
+    }
+    return $ret;
+  }
 }
 
 ?>

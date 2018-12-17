@@ -166,4 +166,15 @@ abstract class BoxObject{
     }
     return implode('_', $ret);
   }
+
+  public static function isType($input) {
+    return $input instanceof BoxObject && self::toPhpBoxObjectstring($input->type) === BoxObject::short(static::class);
+  }
+
+  public static function toId($input) {
+    if(is_string($input)) return $input;
+    if(static::isType($input)) return $input->id;
+    if($input instanceof BoxObject) throw new \Exception("BoxObject with type '{$input->type}' received but ".BoxObject::short(static::class)." expected.");
+    throw new \Exception("Invalid BoxObject id input received: ".print_r($input, true));
+  }
 }
