@@ -37,8 +37,8 @@ class BaseManager {
     return false;
   }
 
-  protected function base_delete($url, $query) {
-    $response = $this->box->guzzle('DELETE', $url, ['query' => $query]);
+  protected function base_delete($url, $query, $headers) {
+    $response = $this->box->guzzle('DELETE', $url, ['headers' => $headers, 'query' => $query]);
     if($this->box->getResponseCode() == 204) {
       return true;
     }

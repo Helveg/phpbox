@@ -40,6 +40,10 @@ class File extends Item {
     }
     return $ret;
   }
+
+  public function write($contents, $ifMatch = "") {
+    
+  }
 }
 
 ?>

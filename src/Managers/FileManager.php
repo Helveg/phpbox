@@ -15,6 +15,8 @@ class FileManager extends ItemManager {
       rewind($fh);
     }
     $multipartParams = [];
+    $meta = stream_get_meta_data($fh);
+    $params['headers'] = ["Content-MD5" => sha1_file($meta['uri'])];
     $params['name'] = $name;
     $params['parent'] = ["id" => Folder::toId($parent)];
     $multipartParams[] = [

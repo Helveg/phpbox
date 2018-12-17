@@ -22,6 +22,12 @@ class FolderManager extends ItemManager {
   public function request($id = "0", $fields = [], $query = []) {
     return parent::request($id, $fields, $query);
   }
+
+  public function delete($id, $recursive = false, $ifMatch = "") {
+    $headers = [];
+    if($ifMatch != "") $headers["If-Match"] = $ifMatch;
+    return parent::delete($id, ["recursive" => $recursive], $headers);
+  }
 }
 
 ?>

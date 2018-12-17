@@ -80,9 +80,8 @@ class Folder extends Item {
     }
   }
 
-  public function delete($recursive = false) {
-    $query = ["recursive" => $recursive];
-    return $this->box->Folder->delete($this, $query);
+  public function delete($recursive = false, $ifMatch = "") {
+    return $this->box->Folder->delete($this, $recursive, $ifMatch);
   }
 
   public function rename(string $new_name) {

@@ -21,7 +21,7 @@ class BoxObjectManager extends BaseManager{
     return $this->base_request("{$boxBoxObjectName}s/$id", $fields, $query);
   }
 
-  public function delete($id, $query = []) {
+  public function delete($id, $query = [], $headers = []) {
     $className = BoxObject::short(static::class);
     $BoxObjectName = substr($className, 0, strlen($className) - 7);
     $BoxObjectClassName = "\\PhpBox\\Objects\\$BoxObjectName";
@@ -33,7 +33,7 @@ class BoxObjectManager extends BaseManager{
         throw new \Exception("BoxObject of wrong type given to request, $boxBoxObjectName expected.");
       }
     }
-    $this->base_delete($endpoint.$id, $query);
+    $this->base_delete($endpoint.$id, $query, $headers);
   }
 }
 
