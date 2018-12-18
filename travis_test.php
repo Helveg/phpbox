@@ -74,7 +74,7 @@ if($check_rename = $file->rename($rename_new_name) && $file->name == $rename_new
 }
 
 if($file->description("Fanny packs are toolbelts") && $file->description == "Fanny packs are toolbelts") {
-  testOK("File description changed.")
+  testOK("File description changed.");
 } else {
   testError("File description couldn't be changed. '{$file->description}' should be 'Fanny packs are toolbelts'.");
 }
