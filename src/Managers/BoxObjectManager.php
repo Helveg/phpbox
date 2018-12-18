@@ -33,7 +33,7 @@ class BoxObjectManager extends BaseManager{
         throw new \Exception("BoxObject of wrong type given to request, $boxBoxObjectName expected.");
       }
     }
-    $this->base_delete($endpoint.$id, $query, $headers);
+    return $this->base_delete($endpoint.$id, $query, $headers);
   }
 }
 

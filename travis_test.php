@@ -88,7 +88,7 @@ if($file->move($folder2) && $folder2->request()->getItems()->count() == 1) {
 if($folder->create(uniqid().".txt","to be deleted")->delete()) {
   testOK("File created through folder and chain deleted.");
 } else {
-  testError("File creationg through folder failed, or chain deletion failed.");
+  testError("File creation through folder failed, or chain deletion failed.");
 }
 
 if($folder->create(uniqid())->delete()) {

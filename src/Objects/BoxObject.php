@@ -129,7 +129,7 @@ abstract class BoxObject{
   public function delete($query = []) {
     $managerName = BoxObject::short(static::class);
     if(!isset($this->box->$managerName)) throw new \Exception("Objects of type ".static::class." cannot delete themselves. (No manager in PhpBox.)");
-    $this->box->$managerName->delete($this, $query);
+    return $this->box->$managerName->delete($this, $query);
   }
 
   /**
@@ -174,7 +174,6 @@ abstract class BoxObject{
 
   public function isSelf() {
     $isSelf = "is".BoxObject::short(static::class);
-    echo "isSelf: $isSelf\n";
     return $this->$isSelf();
   }
 
