@@ -59,7 +59,7 @@ if($folder2 = $folder->create(uniqid())) {
   testError("Couldn't create folder in root folder.");
 }
 
-if($file = $folder->File->create(uniqid().".txt", "wow im good")) {
+if($file = $box->File->create(uniqid().".txt", "wow im good")) {
   testOK("Created file in root folder");
 } else {
   testError("Couldn't create file in root folder.");
