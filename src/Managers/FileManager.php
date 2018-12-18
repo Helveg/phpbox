@@ -32,6 +32,8 @@ class FileManager extends ItemManager {
     ]);
     if($ret) {
       return (new Collection($this->box, $ret))->first();
+    } elseif($this->box->getResponseCode() == 409) {
+      throw new \Exception("A file named '$name' aready exists in folder '$parent'.");
     }
     return false;
   }

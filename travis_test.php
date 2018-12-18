@@ -53,18 +53,54 @@ if($folder = $box->Folder->request("0")) {
   }
 }
 
-if($folder2 = $folder->create("Subfolder test")) {
+if($folder2 = $folder->create(uniqid())) {
   testOK("Created folder in root folder.");
 } else {
   testError("Couldn't create folder in root folder.");
 }
 
-$folder2->delete();
-
-if($box->getResponseCode() == 204) {
-  testOK("Subfolder deleted.");
+if($file = $folder->File->create(uniqid().".txt", "wow im good")) {
+  testOK("Created file in root folder");
 } else {
-  testError("Subfolder couldn't be removed.");
+  testError("Couldn't create file in root folder.");
+}
+$rename_new_name = uniqid().".txt";
+if($check_rename = $file->rename($rename_new_name) && $file->name == $rename_new_name) {
+  testOK("File renamed.");
+} elseif($check_rename === false) {
+  testError("File couldn't be renamed. Request failed.");
+} else {
+  testError("File couldn't be renamed. New name '{$file->name}' doesn't match input '$rename_new_name'");
+}
+
+if($file->description("Fanny packs are toolbelts") && $file->description == "Fanny packs are toolbelts") {
+  testOK("File description changed.")
+} else {
+  testError("File description couldn't be changed. '{$file->description}' should be 'Fanny packs are toolbelts'.");
+}
+
+if($file->move($folder2) && $folder2->request()->getItems()->count() == 1) {
+  testOK("File moved.");
+} else {
+  testError("File couldn't be moved.");
+}
+
+if($folder->create(uniqid().".txt","to be deleted")->delete()) {
+  testOK("File created through folder and chain deleted.");
+} else {
+  testError("File creationg through folder failed, or chain deletion failed.");
+}
+
+if($folder->create(uniqid())->delete()) {
+  testOK("Empty folder deleted (chained).");
+} else {
+  testError("Empty folder couldn't be deleted/chained.");
+}
+
+if($folder2->delete(true)) {
+  testOK("Non-empty folder deleted.");
+} else {
+  testError("Couldn't remove non-empty folder.");
 }
 
 exit(0);

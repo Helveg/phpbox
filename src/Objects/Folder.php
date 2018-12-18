@@ -73,9 +73,9 @@ class Folder extends Item {
   }
 
   public function create($name, $content = NULL) {
-    if($content !== NULL) { // File
-      throw new \Exceptiont("File creation not implemented yet.");
-    } else {
+    if($content !== NULL) { // Create file
+      return $this->box->File->create($name, $content, $this);
+    } else { // Create folder
       return $this->box->Folder->create($this, $name);
     }
   }

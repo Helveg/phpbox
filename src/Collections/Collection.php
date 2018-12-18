@@ -40,4 +40,9 @@ class Collection extends \ArrayObject {
     if($this->count() === 0) throw new \Exception("Can't get first element of empty collection.");
     return array_values($this->getArrayCopy())[0];
   }
+
+  public function last() {
+    if($this->count() === 0) throw new \Exception("Can't get last element of empty collection.");
+    return array_values($this->getArrayCopy())[$this->count() - 1];
+  }
 }

@@ -94,13 +94,14 @@ abstract class BoxObject{
 
   public function __call($name, $args) {
     $BoxObjectName = substr($name, 2);
+    $className = "\\PhpBox\\Objects\\$BoxObjectName";
     $isBoxObject = "is$BoxObjectName";
     if(substr($name, 0, 2) == "is" && in_array($BoxObjectName, self::ALL_Objects)) {
       // isBoxObject()
-      return $this->type == self::toBoxObjectstring(BoxObject::short(static::class));
+      return $className::isType($this);
     } elseif(substr($name, 0, 2) == "to" && in_array($BoxObjectName, self::ALL_Objects)) {
       // toBoxObject()
-      if($this->$isBoxObject()) return new $BoxObjectName($this->box, $this->data);
+      if($this->$isBoxObject()) return new $className($this->box, $this->data);
       throw new Exception("This is not a $BoxObjectName.");
     }
     throw new \Exception("Attempt to call unknown method '$name' in '".static::class."'");
@@ -171,10 +172,19 @@ abstract class BoxObject{
     return $input instanceof BoxObject && self::toPhpBoxObjectstring($input->type) === BoxObject::short(static::class);
   }
 
+  public function isSelf() {
+    $isSelf = "is".BoxObject::short(static::class);
+    echo "isSelf: $isSelf\n";
+    return $this->$isSelf();
+  }
+
   public static function toId($input) {
-    if(is_string($input)) return $input;
-    if(static::isType($input)) return $input->id;
-    if($input instanceof BoxObject) throw new \Exception("BoxObject with type '{$input->type}' received but ".BoxObject::short(static::class)." expected.");
-    throw new \Exception("Invalid BoxObject id input received: ".print_r($input, true));
+    if(is_string($input) || is_numeric($input)) return $input;
+    if(!($input instanceof BoxObject)) throw new \Exception("Can only convert numbers, strings or BoxObjects to id.");
+    $myClass = static::class;
+    // Make sure we inherit from static before we switch the static context to that of $input in the isSelf() call.
+    if(($input instanceof $myClass) && $input->isSelf()) return $input->id;
+    elseif ($input instanceof $myClass) throw new \Exception("BoxObject with type '{$input->type}' received but ".BoxObject::short(static::class)." expected.");
+    else throw new \Exception("BoxObject '".get_class($input)."' does not extend '".static::class."' and cannot be a valid id in this context.");
   }
 }

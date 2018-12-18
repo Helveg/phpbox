@@ -26,7 +26,18 @@ class FolderManager extends ItemManager {
   public function delete($id, $recursive = false, $ifMatch = "") {
     $headers = [];
     if($ifMatch != "") $headers["If-Match"] = $ifMatch;
-    return parent::delete($id, ["recursive" => $recursive], $headers);
+
+    if(is_string($recursive) && $recursive !== "true" && $recursive !== "false") throw new \Exception("Invalid \$recursive parameter, only 'true', 'false' or a boolean accepted.");
+    elseif(is_bool($recursive)) $recursive = $recursive ? "true" : "false";
+    else throw new \Exception("Invalid \$recursive parameter, only 'true', 'false' or a boolean accepted.");
+
+    $ret = parent::delete($id, ["recursive" => $recursive], $headers);
+    if(!$ret) {
+      if($this->box->getResponseCode() == 400 && $this->box->getResponseJSON()->code == "folder_not_empty") {
+        throw new \Exception("Cannot delete a non-empty folder without setting the \$recursive parameter to true.");
+      }
+    }
+    return $ret;
   }
 }
 

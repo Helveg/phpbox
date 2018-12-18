@@ -1,7 +1,7 @@
 <?php
 
 namespace PhpBox\Managers;
-use \PhpBox\Objects\{BoxObject,Folder};
+use \PhpBox\Objects\{BoxObject,Folder,File,Item};
 
 class ItemManager extends BoxObjectManager {
   public function update($id, $params, $fields) {
@@ -14,9 +14,9 @@ class ItemManager extends BoxObjectManager {
   }
 
   public function move($id, $new_folder) {
-    $id = Folder::toId($new_folder);
-    var_dump($id);
-    return $this->update($id, ["parent" => ["id" => $id]], ["parent"]);
+    $id = Item::toId($id);
+    $parentId = Folder::toId($new_folder);
+    return $this->update($id, ["parent" => ["id" => $parentId]], ["parent"]);
   }
 
   public function description($id, $new_description) {
