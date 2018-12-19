@@ -38,6 +38,7 @@ class ItemManager extends BoxObjectManager {
     }
     return false;
   }
+
 }
 
 ?>

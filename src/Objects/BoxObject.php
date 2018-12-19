@@ -52,7 +52,7 @@ abstract class BoxObject{
       $prop_key = (substr($key, 0, 1) === "\$" ? "meta_" : substr($key, 0, 1)).substr($key, 1); // Replace the $keys by meta_keys for Box metadata.
       if(property_exists($this, $prop_key)) {
         $this->responseFields[] = $prop_key;
-        if(isset($data->$key)) {
+        if(property_exists($data, $key)) {
           $cell = $data->$key;
           if($map !== NULL) $cell = $map($cell);
           $this->$prop_key = $cell;

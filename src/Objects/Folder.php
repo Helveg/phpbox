@@ -88,24 +88,27 @@ class Folder extends Item {
     $ret = $this->box->Folder->rename($this, $new_name);
     if($ret && $this->box->getResponseCode() == 200) {
       $this->parseResponse($ret);
+      return $this;
     }
-    return $ret;
+    return false;
   }
 
   public function description(string $description) {
     $ret = $this->box->Folder->description($this, $description);
     if($ret && $this->box->getResponseCode() == 200) {
       $this->parseResponse($ret);
+      return $this;
     }
-    return $ret;
+    return false;
   }
 
   public function move($new_folder) {
     $ret = $this->box->Folder->move($this, $new_folder);
     if($ret && $this->box->getResponseCode() == 200) {
       $this->parseResponse($ret);
+      return $this;
     }
-    return $ret;
+    return false;
   }
 }
 

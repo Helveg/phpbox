@@ -91,6 +91,18 @@ if($file->copy($folder2, uniqid())) {
   testError("File could not be copied");
 }
 
+if($file->lock() && $file->lock !== NULL) {
+  testOK("File locked.");
+} else {
+  testError("Could not lock file or lock was not updated in file object.");
+}
+
+if($file->unlock() && $file->lock === NULL) {
+  testOK("File unlocked.");
+} else {
+  testError("Could not unlock file or lock was not updated in file object.");
+}
+
 if($folder->create(uniqid().".txt","to be deleted")->delete()) {
   testOK("File created through folder and chain deleted.");
 } else {

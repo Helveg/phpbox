@@ -38,6 +38,24 @@ class FileManager extends ItemManager {
     return false;
   }
 
+  public function lock($id, $expires_at = "", bool $is_download_prevented = false) {
+    $params = ["lock" => ['is_download_prevented' => $is_download_prevented]];
+    if($expires_at !== "") {
+      if($expires_at instanceof \DateTime || $expires_at instanceof \DateTimeImmutable) {
+        if(!defined("\\DateTimeInterface::RFC3339")) $format = "Y-m-d\TH:i:sP"; // < PHP 7.2.0
+        else $format = \DateTimeInterface::RFC3339;
+        $params['lock']['expires_at'] = $expires_at->format($format);
+      } else {
+        throw new \Exception("\$expires_at parameter must be of type DateTime or DateTimeImmutable.");
+      }
+    }
+    return $this->update($id, $params, ["lock"]);
+  }
+
+  public function unlock($id) {
+    $params = ["lock" => NULL];
+    return $this->update($id, ["lock" => NULL], ["lock"]);
+  }
 }
 
 ?>
