@@ -55,6 +55,10 @@ class Item extends BoxObject {
     if($this->id == 0) return "/";
     return implode("/", array_map(function($x){ return $x->id == 0 ? "" : $x->getName(); }, $this->getPathFolders()));
   }
+
+  public function copy($new_folder = "", $new_name = "", $params = [], $fields = []) {
+    return $this->toManager()->copy($this, $new_folder, $new_name, $params, $fields);
+  }
 }
 
 ?>

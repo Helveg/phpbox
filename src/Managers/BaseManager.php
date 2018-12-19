@@ -11,6 +11,19 @@ class BaseManager {
     $this->box = $box;
   }
 
+  public function getManagedObjectClass() {
+    $className = BoxObject::short(static::class);
+    $BoxObjectName = substr($className, 0, strlen($className) - 7);
+    return "\\PhpBox\\Objects\\$BoxObjectName";
+  }
+
+  public function getEndpoint() {
+    $className = BoxObject::short(static::class);
+    $BoxObjectName = substr($className, 0, strlen($className) - 7);
+    $BoxObjectClassName = "\\PhpBox\\Objects\\$BoxObjectName";
+    return $BoxObjectClassName::getEndpoint();
+  }
+
   protected function base_request($url, $fields = [], $query = []) {
     $className = BoxObject::short(static::class);
     $BoxObjectName = substr($className, 0, strlen($className) - 7);

@@ -168,6 +168,11 @@ abstract class BoxObject{
     return implode('_', $ret);
   }
 
+  public function toManager() {
+    $managerName = BoxObject::short(static::class);
+    return $this->box->$managerName;
+  }
+
   public static function isType($input) {
     return $input instanceof BoxObject && self::toPhpBoxObjectstring($input->type) === BoxObject::short(static::class);
   }

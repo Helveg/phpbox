@@ -85,6 +85,12 @@ if($file->move($folder2) && $folder2->request()->getItems()->count() == 1) {
   testError("File couldn't be moved.");
 }
 
+if($file->copy($folder2, uniqid())) {
+  testOK("File copied.");
+} else {
+  testError("File could not be copied");
+}
+
 if($folder->create(uniqid().".txt","to be deleted")->delete()) {
   testOK("File created through folder and chain deleted.");
 } else {

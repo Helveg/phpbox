@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpBox\Managers;
+use \PhpBox\Box;
 use \PhpBox\Objects\{BoxObject,Folder,File,Item};
 
 class ItemManager extends BoxObjectManager {
@@ -21,6 +22,21 @@ class ItemManager extends BoxObjectManager {
 
   public function description($id, $new_description) {
     return $this->update($id, ["description" => (string)$new_description], ["description"]);
+  }
+
+  public function copy($id, $new_folder = "", $new_name = "", $params = [], $fields = []) {
+    $id = Item::toId($id);
+    if($new_folder !== "") $params['parent'] = ["id" => Folder::toId($new_folder)];
+    if($new_name !== "") $params['name'] = $new_name;
+    $ret = $this->box->guzzle("POST", static::getEndpoint()."$id/copy", [
+      'json' => $params,
+      'query' => Box::fieldsQuery($fields)
+    ]);
+    if($ret) {
+      $class = $this->getManagedObjectClass();
+      return new $class($this->box, $ret);
+    }
+    return false;
   }
 }
 
