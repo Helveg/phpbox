@@ -1,5 +1,5 @@
 # phpbox
-Implementation of several aspects of the Box v2.0 API. STILL VERY HEAVILY UNDER DEVELOPMENT (any feedback on GitHub would be appreciated)
+Implementation of several aspects of the Box v2.0 API.
 
 [![Build Status](https://travis-ci.com/Helveg/phpbox.svg?branch=master)](https://travis-ci.com/Helveg/phpbox)
 
