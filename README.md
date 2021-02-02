@@ -1,4 +1,7 @@
 # phpbox
+
+This project is abandoned, I don't use Box or PHP anymore.
+
 Implementation of several aspects of the Box v2.0 API.
 
 [![Build Status](https://travis-ci.com/Helveg/phpbox.svg?branch=master)](https://travis-ci.com/Helveg/phpbox)
